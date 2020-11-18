@@ -1,4 +1,4 @@
-## Toy Demo of "Camera-Space Hand Mesh Recovery from Monocular Image with Semantic Aggregation and Adaptive 2D-1D Registration"
+## Toy Demo of "Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
 ### Install 
 + Environment and requirements
