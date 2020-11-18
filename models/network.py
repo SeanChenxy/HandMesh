@@ -24,11 +24,6 @@ class ParallelDeblock(nn.Module):
         self.conv_d3 = SpiralConv(in_channels, out_channels // 4, indices_d3)
         self.conv = SpiralConv(in_channels, out_channels // 2, indices)
         self.conv1 = SpiralConv(in_channels, out_channels, indices_1)
-        if self.bn:
-            self.bn_2d3 = nn.BatchNorm1d(out_channels // 4)
-            self.bn_d3 = nn.BatchNorm1d(out_channels // 4)
-            self.bn = nn.BatchNorm1d(out_channels // 2)
-            self.bn1 = nn.BatchNorm1d(out_channels)
 
     def forward(self, x, up_transform):
         out = Pool(x, up_transform)
@@ -36,11 +31,6 @@ class ParallelDeblock(nn.Module):
         p_d3 = self.conv_d3(out)
         p_2d3 = self.conv_2d3(out)
         p = self.conv(out)
-        if self.bn:
-            short_cut = self.bn1(short_cut.permute(0, 2, 1)).permute(0, 2, 1)
-            p_d3 = self.bn_d3(p_d3.permute(0, 2, 1)).permute(0, 2, 1)
-            p_2d3 = self.bn_2d3(p_2d3.permute(0, 2, 1)).permute(0, 2, 1)
-            p = self.bn(p.permute(0, 2, 1)).permute(0, 2, 1)
 
         f = torch.cat((p, p_2d3, p_d3), 2)
         out = F.relu(short_cut + f)

@@ -1,10 +1,14 @@
 ## Toy Demo of "Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
 ### Install 
-+ Environment and requirements
++ Environment
     ```
     conda create -n CMR python=3.6
     conda activate CMR
+    ```
++ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.5.0, torchvision=0.6.0
++ Requirements
+    ```
     pip install -r requirements.txt
     ```
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source

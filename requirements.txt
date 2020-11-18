@@ -2,8 +2,6 @@ numpy==1.19.1
 scipy==1.4.1
 matplotlib==3.3.2
 opencv-python==4.4.0.46
-torch==1.5.1
-torchvision==0.6.0
 torch_scatter==2.0.2
 torch_geometric==1.6.0
 torch_sparse==0.5.1
@@ -11,4 +9,4 @@ openmesh
 scikit-learn
 scikit-image==0.16.2
 termcolor
-chumpy==0.69
+chumpy
