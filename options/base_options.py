@@ -7,7 +7,7 @@ class BaseOptions():
 
     def initialize(self, parser):
         parser.add_argument('--local_rank', type=int, default=0)
-        parser.add_argument('--exp_name', type=str, default='cmr_pg')
+        parser.add_argument('--exp_name', type=str, default='cmr_sp')
         parser.add_argument('--dataset', type=str, default='FreiHAND')
         parser.add_argument('--size', type=int, default=224)
         parser.add_argument('--n_threads', type=int, default=4)
@@ -19,12 +19,12 @@ class BaseOptions():
         parser.add_argument('--in_channels', type=int, default=3)
         parser.add_argument('--seq_length', type=int, default=[27, 27, 27, 27], nargs='+')
         parser.add_argument('--dilation', type=int, default=[1, 1, 1, 1], nargs='+')
-        parser.add_argument('--model', type=str, default='cmr_pg')
-        parser.add_argument('--backbone', type=str, default='ResNet18')
+        parser.add_argument('--model', type=str, default='cmr_sp')
+        parser.add_argument('--backbone', type=str, default='ResNet50')
 
         # training hyperparameters
         parser.add_argument('--phase', type=str, default='demo')
-        parser.add_argument('--resume', type=str, default='cmr_pg_res18_freihand.pt')
+        parser.add_argument('--resume', type=str, default='cmr_sp_res50_freihand.pt')
 
         self.initialized = True
         return parser

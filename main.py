@@ -2,6 +2,7 @@ import os.path as osp
 import torch
 import torch.backends.cudnn as cudnn
 from models.cmr_pg import CMR_PG
+from models.cmr_sp import CMR_SP
 from utils.read import spiral_tramsform
 from utils import utils
 from options.base_options import BaseOptions
@@ -42,6 +43,8 @@ if __name__ == '__main__':
     # model
     if args.model == 'cmr_pg':
         model = CMR_PG(args, spiral_indices_list, up_transform_list)
+    elif args.model == 'cmr_sp':
+        model = CMR_SP(args, spiral_indices_list, up_transform_list)
     else:
         raise Exception('Model {} not support'.format(args.model))
 

@@ -11,11 +11,7 @@
     ```
     pip install -r requirements.txt
     ```
-+ [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source
-    + If BOOST is installed, try `make all`
-
-### Pre-trained model
-Please download pre-trained model from [here](https://drive.google.com/file/d/1Lfz2Tjo8opjCZbcmyIYhqQcGwhasIsvp/view?usp=sharing), and place it at `out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt`
++ [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the sourcem [here](https://drive.google.com/file/d/1Lfz2Tjo8opjCZbcmyIYhqQcGwhasIsvp/view?usp=sharing) or [here](https://drive.google.com/file/d/1BOzIuMG8KJ92ZdzdV_GHYrIeWd4W2Vhk/view?usp=sharing), and place it at `out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt` or `out/FreiHAND/cmr_sp/checkpoints/cmr_sp_res50_freihand.pt`
 
 ### Run a demo
 ```
