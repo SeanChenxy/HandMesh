@@ -2,7 +2,7 @@
 ## Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
 <p align="middle">  
-<img src="./images/demo.jpg">  
+<img src="./images/demo.jpg" width="672" height="448">  
 </p> 
 
 <p align="middle">
@@ -59,7 +59,7 @@ Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-fre
 ## Training
 comming soon
 
-### Reference
+## Reference
 ```tex
 @inproceedings{bib:CMR,
   title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive {2D-1D} Registration},
