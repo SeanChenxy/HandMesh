@@ -140,8 +140,6 @@ def db_size(set_name):
 
 
 def load_db_annotation(base_path, writer=None, set_name=None):
-    if set_name is None or set_name in ['test', 'train30k']:
-        set_name = 'training'
     if set_name == 'training':
         if writer is not None:
             writer.print_str('Loading FreiHAND training set index ...')

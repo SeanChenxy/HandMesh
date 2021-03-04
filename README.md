@@ -36,6 +36,19 @@ The prediction results will be saved in `out/FreiHAND/cmr_pg/demo`
 ## Evaluation on FreiHAND
 #### Dataset
 Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-freiburg.de/projects/freihand/), and create a soft link in `data`, i.e., `data/FreiHAND`.
+```  
+${ROOT}  
+|-- data  
+|   |-- FreiHAND
+|   |   |-- training
+|   |   |-- evaluation
+|   |   |-- evaluation_K.json
+|   |   |-- evaluation_scals.json
+|   |   |-- training_K.json
+|   |   |-- training_mano.json
+|   |   |-- training_xyz.json
+```  
+
 #### Run
 ```
 ./eval_freihand.sh
