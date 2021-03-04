@@ -9,4 +9,5 @@ openmesh
 scikit-learn
 scikit-image==0.16.2
 termcolor
-chumpy
+chumpy==0.69
+PyOpenGL

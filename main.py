@@ -1,8 +1,8 @@
 import os.path as osp
 import torch
 import torch.backends.cudnn as cudnn
-from models.cmr_pg import CMR_PG
-from models.cmr_sp import CMR_SP
+from cmr.cmr_pg import CMR_PG
+from cmr.cmr_sp import CMR_SP
 from utils.read import spiral_tramsform
 from utils import utils
 from options.base_options import BaseOptions

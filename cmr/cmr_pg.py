@@ -89,7 +89,7 @@ class CMR_PG(nn.Module):
         self.up_transform = up_transform
         self.num_vert = [u.size(0) for u in self.up_transform] + [self.up_transform[-1].size(1)]
         self.uv_channel = 21
-        self.relation = [[4, 8], [4, 12], [4, 16], [4, 20], [8, 12], [8, 16], [8, 20], [12, 16], [12, 20], [16, 20]]#, [1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20]]
+        self.relation = [[4, 8], [4, 12], [4, 16], [4, 20], [8, 12], [8, 16], [8, 20], [12, 16], [12, 20], [16, 20]]
 
         backbone, self.latent_size = self.get_backbone(args.backbone)
         self.backbone1 = EncodeStage1(backbone)

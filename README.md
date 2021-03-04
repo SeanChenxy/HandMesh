@@ -26,7 +26,7 @@ Please download FreiHAND dataset from [here](https://lmb.informatik.uni-freiburg
 ```
 ./eval_freihand.sh
 ```
-+ JSON file will be saved as `out/FreiHAND/cmr_pg/cmr_pg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation. Note that because this is a online competition, we did not provide our best model.
++ JSON file will be saved as `out/FreiHAND/cmr_pg/cmr_pg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 + If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_pg/eval`.
 
 ## Explaination of output
@@ -38,3 +38,13 @@ Please download FreiHAND dataset from [here](https://lmb.informatik.uni-freiburg
     + This file is a 3D model of the hand.
     + You can open it with corresponding software (e.g., Preview in Mac).
     + Here, you can get more 3D details through rotation and zoom in.
+
+## Citation
+```tex
+@inproceedings{bib:CMR,
+  title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive {2D-1D} Registration},
+  author={Chen, Xingyu and Liu, Yufeng and Ma, Chongyang and Chang, Jianlong and Wang, Huayan and Chen, Tian and Guo, Xiaoyan and Wan, Pengfei and Zheng, Wen},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2021}
+}
+```
