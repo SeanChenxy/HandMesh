@@ -5,6 +5,10 @@
 <img src="./images/demo.jpg">  
 </p> 
 
+<p align="middle">
+<img src="./images/video.gif" width="672" height="448">
+</p>
+
 ## Introduction
 This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link]().
 
