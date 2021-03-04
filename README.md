@@ -1,9 +1,7 @@
 
 ## Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
-![output](./images/demo.jpg)
-
-<p align="center">  
+<p align="middle">  
 <img src="./images/demo.jpg">  
 </p> 
 
@@ -42,7 +40,10 @@ Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-fre
 + If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
 
 ## Explaination of the output
-![output](./images/2299_plot.jpg)
+
+<p align="middle">  
+<img src="./images/2299_plot.jpg">  
+</p> 
 
 + In an JPEG file (e.g., 000_plot.jpg), we show silhouette, 2D pose, projection of mesh, camera-space mesh and pose
 + As for camera-space information, we use a red rectangle to indicate the camera position, or the image plane. The unit is meter.
