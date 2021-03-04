@@ -6,6 +6,12 @@ from conv import SpiralConv
 
 
 def Pool(x, trans, dim=1):
+    """
+    :param x: input feature
+    :param trans: upsample matrix
+    :param dim: upsample dimension
+    :return: upsampled feature
+    """
     trans = trans.to(x.device)
     row, col = trans._indices()
     value = trans._values().unsqueeze(-1)
@@ -15,6 +21,10 @@ def Pool(x, trans, dim=1):
 
 
 class ParallelDeblock(nn.Module):
+    """
+    ISM in the paper. Note that "indices[:, :indices.size(1)//3]" is approximate and not-strict k-disk.
+    In this way, a from-small-to-large receptive field can be obtained, and "conv" can be shared among all vertices.
+    """
     def __init__(self, in_channels, out_channels, indices):
         super(ParallelDeblock, self).__init__()
         indices_2d3 = indices[:, :indices.size(1)//3*2]
@@ -26,6 +36,11 @@ class ParallelDeblock(nn.Module):
         self.conv1 = SpiralConv(in_channels, out_channels, indices_1)
 
     def forward(self, x, up_transform):
+        """
+        :param x: input feature
+        :param up_transform: upsample matrix
+        :return: upsampled and convoluted feature
+        """
         out = Pool(x, up_transform)
         short_cut = self.conv1(out)
         p_d3 = self.conv_d3(out)
@@ -93,7 +108,6 @@ class ConvTBlock(nn.Module):
 
 
 class SelfAttention(nn.Module):
-
     def __init__(self, in_dim):
         super(SelfAttention, self).__init__()
         self.query_conv = nn.Linear(in_dim, in_dim)
@@ -110,7 +124,6 @@ class SelfAttention(nn.Module):
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, x):
-
         m_batchsize, num_dim = x.size()
         proj_query = self.query_conv(x).view(m_batchsize, 1, num_dim).permute(0, 2, 1)
         proj_key = self.key_conv(x).view(m_batchsize, 1, num_dim)

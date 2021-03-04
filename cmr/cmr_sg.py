@@ -81,6 +81,13 @@ class EncodeStage3(nn.Module):
 
 
 class CMR_SG(nn.Module):
+    """
+    Implementation of CMR_SG.
+    :param spiral_indices: pre-defined spiral sample
+    :param up_transform: pre-defined upsample matrix
+    :param relation: This implementation only adopts tip-based aggregation.
+                     You can employ more sub-poses by enlarge relation list.
+    """
     def __init__(self, args, spiral_indices, up_transform):
         super(CMR_SG, self).__init__()
         self.in_channels = args.in_channels
@@ -167,7 +174,7 @@ class CMR_SG(nn.Module):
 
         return hierachy_pred[::-1]
 
-    def uv_prior_decoder(self, z):
+    def mask_decoder(self, z):
         x = z[0]
         for i, de in enumerate(self.mask_delayer):
             x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=False)
@@ -202,7 +209,7 @@ class CMR_SG(nn.Module):
 
     def forward(self, x):
         z1 = self.backbone1(x)
-        pred1 = self.uv_prior_decoder(z1[1:])
+        pred1 = self.mask_decoder(z1[1:])
         z2 = self.backbone2(torch.cat([z1[0], pred1], 1))
         pred2 = self.uv_decoder(z2[1:])
         z3 = self.backbone3(torch.cat([z2[0], pred2] + [pred2[:, i].sum(dim=1, keepdim=True) for i in self.relation], 1))
