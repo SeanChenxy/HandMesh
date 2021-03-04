@@ -1,7 +1,14 @@
-## Toy Demo of "Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
-## Info
-This repo is the implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link]().
+## Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
+
+![output](./images/demo.jpg)
+
+<p align="center">  
+<img src="./images/demo.jpg">  
+</p> 
+
+## Introduction
+This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link]().
 
 ## Install 
 + Environment
@@ -34,13 +41,11 @@ Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-fre
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 + If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
 
-## Explaination of output
+## Explaination of the output
 ![output](./images/2299_plot.jpg)
 
 + In an JPEG file (e.g., 000_plot.jpg), we show silhouette, 2D pose, projection of mesh, camera-space mesh and pose
-+ As for camera-space information, we use a red rectangle to indicate the camera position, or the image plane.
-    + The unit is meter.
-    + Please refer to our paper for X-, Y-, and Z-axes.
++ As for camera-space information, we use a red rectangle to indicate the camera position, or the image plane. The unit is meter.
 + If you run the demo, you can also obtain a PLY file (e.g., 000_mesh.ply). 
     + This file is a 3D model of the hand.
     + You can open it with corresponding software (e.g., Preview in Mac).
@@ -49,7 +54,7 @@ Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-fre
 ## Training
 comming soon
 
-### Citation
+### Reference
 ```tex
 @inproceedings{bib:CMR,
   title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive {2D-1D} Registration},
