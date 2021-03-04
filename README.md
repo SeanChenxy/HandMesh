@@ -1,5 +1,5 @@
 
-## Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
+# Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
 <div style="align: center">
 <img src="./images/demo.jpg" width="672" height="448">  
