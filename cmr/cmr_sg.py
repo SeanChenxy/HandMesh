@@ -49,9 +49,7 @@ class EncodeStage2(nn.Module):
         x2 = self.layer2(x1)
         x3 = self.layer3(x2)
         x4 = self.layer4(x3)
-        # x = self.avgpool(x)
-        # x = torch.flatten(x, 1)
-        # x = self.fc(x)
+
         return x0, x4, x3, x2, x1
 
 
@@ -82,34 +80,31 @@ class EncodeStage3(nn.Module):
         return x, x4, x3, x2, x1
 
 
-class CMR_SP(nn.Module):
+class CMR_SG(nn.Module):
     def __init__(self, args, spiral_indices, up_transform):
-        super(CMR_SP, self).__init__()
+        super(CMR_SG, self).__init__()
         self.in_channels = args.in_channels
         self.out_channels = args.out_channels
         self.spiral_indices = spiral_indices
         self.up_transform = up_transform
         self.num_vert = [u.size(0) for u in self.up_transform] + [self.up_transform[-1].size(1)]
         self.uv_channel = 21
+        self.relation = [[4, 8], [4, 12], [4, 16], [4, 20], [8, 12], [8, 16], [8, 20], [12, 16], [12, 20], [16, 20]]
 
         backbone, self.latent_size = self.get_backbone(args.backbone)
         self.backbone1 = EncodeStage1(backbone)
 
         backbone2, _ = self.get_backbone(args.backbone)
-        self.backbone2 = EncodeStage2(backbone2, 64+1)
+        self.backbone2 = EncodeStage2(backbone2, 64 + 1)
 
         backbone3, _ = self.get_backbone(args.backbone)
-        self.backbone3 = EncodeStage3(backbone3, 64+self.uv_channel)
+        self.backbone3 = EncodeStage3(backbone3, 64+self.uv_channel+len(self.relation))
 
-        self.mask_delayer = nn.ModuleList([ConvBlock(self.latent_size[2] + self.latent_size[1], self.latent_size[2],
-                                                     kernel_size=3, relu=True, norm='bn'),
-                                           ConvBlock(self.latent_size[3] + self.latent_size[2], self.latent_size[3],
-                                                     kernel_size=3, relu=True, norm='bn'),
-                                           ConvBlock(self.latent_size[4] + self.latent_size[3], self.latent_size[4],
-                                                     kernel_size=3, relu=True, norm='bn'),
-                                           ConvBlock(self.latent_size[4], self.latent_size[4], kernel_size=3, relu=True,
-                                                     norm='bn'),
-                                           ])
+        self.mask_delayer = nn.ModuleList([ConvBlock(self.latent_size[2] + self.latent_size[1], self.latent_size[2], kernel_size=3, relu=True, norm='bn'),
+                                          ConvBlock(self.latent_size[3] + self.latent_size[2], self.latent_size[3], kernel_size=3, relu=True, norm='bn'),
+                                          ConvBlock(self.latent_size[4] + self.latent_size[3], self.latent_size[4], kernel_size=3, relu=True, norm='bn'),
+                                          ConvBlock(self.latent_size[4], self.latent_size[4], kernel_size=3, relu=True, norm='bn'),
+                                          ])
         self.mask_head = ConvBlock(self.latent_size[4], 1, kernel_size=3, padding=1, relu=False, norm=None)
 
         self.uv_delayer = nn.ModuleList([ConvBlock(self.latent_size[2] + self.latent_size[1], self.latent_size[2], kernel_size=3, relu=True, norm='bn'),
@@ -172,12 +167,12 @@ class CMR_SP(nn.Module):
 
         return hierachy_pred[::-1]
 
-    def mask_decoder(self, z):
+    def uv_prior_decoder(self, z):
         x = z[0]
         for i, de in enumerate(self.mask_delayer):
             x = F.interpolate(x, scale_factor=2, mode='bilinear', align_corners=False)
             if i < 3:
-                x = torch.cat((x, z[i + 1]), dim=1)
+                x = torch.cat((x, z[i+1]), dim=1)
             x = de(x)
         pred = torch.sigmoid(self.mask_head(x))
 
@@ -207,16 +202,16 @@ class CMR_SP(nn.Module):
 
     def forward(self, x):
         z1 = self.backbone1(x)
-        pred1 = self.mask_decoder(z1[1:])
+        pred1 = self.uv_prior_decoder(z1[1:])
         z2 = self.backbone2(torch.cat([z1[0], pred1], 1))
         pred2 = self.uv_decoder(z2[1:])
-        z3 = self.backbone3(torch.cat([z2[0], pred2], 1))
+        z3 = self.backbone3(torch.cat([z2[0], pred2] + [pred2[:, i].sum(dim=1, keepdim=True) for i in self.relation], 1))
         pred3 = self.decoder(z3[0])
         pred4 = self.uvm_decoder(z3[1:])
 
         return {'mesh_pred': pred3,
                 'uv_pred': pred4[:, :self.uv_channel],
                 'mask_pred': pred4[:, self.uv_channel],
-                'mask_prior': pred1[:, 0],
-                'uv_prior': pred2
+                'uv_prior': pred1,
+                'uv_prior2': pred2,
                 }

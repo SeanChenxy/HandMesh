@@ -1,9 +1,9 @@
 import torch
 from collections import OrderedDict
 
-path = '../out/FreiHAND/cmr_sp/checkpoints/'
-old_name = 'checkpoint.pt'
-new_name = 'cmr_sp_res50_freihand.pt'
+path = '../out/FreiHAND/cmr_sg/checkpoints/'
+old_name = 'cmr_sg.pt'
+new_name = 'cmr_sg_res18_freihand.pt'
 new_weight = OrderedDict()
 checkpoint = torch.load(path+old_name, map_location='cpu')['model_state_dict']
 

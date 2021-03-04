@@ -1,8 +1,8 @@
 phase='eval'
-exp_name='cmr_pg'
+exp_name='cmr_sg'
 backbone='ResNet18'
 dataset='FreiHAND'
-model='cmr_pg'
+model='cmr_sg'
 python main.py \
     --phase $phase \
     --exp_name $exp_name \
@@ -10,4 +10,4 @@ python main.py \
     --model $model \
     --backbone $backbone \
     --device_idx -1 \
-    --resume 'cmr_pg_res18_freihand.pt' \
+    --resume 'cmr_sg_res18_freihand.pt' \

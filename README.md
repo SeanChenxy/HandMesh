@@ -1,5 +1,8 @@
 ## Toy Demo of "Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration"
 
+### Info
+This repo is the implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper [here]().
+
 ### Install 
 + Environment
     ```
@@ -27,6 +30,7 @@ Please download FreiHAND dataset from [here](https://lmb.informatik.uni-freiburg
 ./eval_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_pg/cmr_pg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
++ This model can obtain xx mm PA-MPVPE and xx CS-MPJPE.
 + If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_pg/eval`.
 
 ## Explaination of output
@@ -39,7 +43,7 @@ Please download FreiHAND dataset from [here](https://lmb.informatik.uni-freiburg
     + You can open it with corresponding software (e.g., Preview in Mac).
     + Here, you can get more 3D details through rotation and zoom in.
 
-## Citation
+### Citation
 ```tex
 @inproceedings{bib:CMR,
   title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive {2D-1D} Registration},

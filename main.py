@@ -1,8 +1,7 @@
 import os.path as osp
 import torch
 import torch.backends.cudnn as cudnn
-from cmr.cmr_pg import CMR_PG
-from cmr.cmr_sp import CMR_SP
+from cmr.cmr_sg import CMR_SG
 from utils.read import spiral_tramsform
 from utils import utils
 from options.base_options import BaseOptions
@@ -41,10 +40,8 @@ if __name__ == '__main__':
     transform_fp = osp.join(args.work_dir, 'template', 'transform.pkl')
     spiral_indices_list, down_transform_list, up_transform_list, tmp = spiral_tramsform(transform_fp, template_fp, args.ds_factors, args.seq_length, args.dilation)
     # model
-    if args.model == 'cmr_pg':
-        model = CMR_PG(args, spiral_indices_list, up_transform_list)
-    elif args.model == 'cmr_sp':
-        model = CMR_SP(args, spiral_indices_list, up_transform_list)
+    if args.model == 'cmr_sg':
+        model = CMR_SG(args, spiral_indices_list, up_transform_list)
     else:
         raise Exception('Model {} not support'.format(args.model))
 
