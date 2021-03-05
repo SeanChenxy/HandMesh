@@ -35,18 +35,25 @@ def crop_roi(img, bbox, out_sz, padding=(0, 0, 0)):
 
 
 def registration(vertex, uv, j_regressor, K, size, uv_conf=None, poly=None):
+    """
+    Adaptive 2D-1D registration
+    :param vertex: 3D mesh xyz
+    :param uv: 2D pose
+    :param j_regressor: matrix for vertex -> joint
+    :param K: camera parameters
+    :param size: image size
+    :param uv_conf: 2D pose confidence
+    :param poly: contours from silhouette
+    :return: camera-space vertex
+    """
     t = np.array([0, 0, 0.6])
-    bounds = ((None, None), (None, None), (0.3, 2)) if vertex.shape[0] == 778 else ((None, None), (None, None), (1, 8))
-    poly_protect = [0.06, 0.02] if vertex.shape[0] == 778 else [1.0, 0.5]
+    bounds = ((None, None), (None, None), (0.3, 2))
+    poly_protect = [0.06, 0.02]
 
-    if vertex.shape[0] in [21, 17] or uv.shape[0] in [778, 6980]:
-        vertex2xyz = vertex
-        try_poly = False
-    else:
-        vertex2xyz = np.matmul(j_regressor, vertex)
-        if vertex2xyz.shape[0] == 21:
-            vertex2xyz = mano_to_mpii(vertex2xyz)
-        try_poly = True
+    vertex2xyz = np.matmul(j_regressor, vertex)
+    if vertex2xyz.shape[0] == 21:
+        vertex2xyz = mano_to_mpii(vertex2xyz)
+    try_poly = True
     uv_select = uv_conf > 0.1
     if uv_select.sum() == 0:
         success = False
