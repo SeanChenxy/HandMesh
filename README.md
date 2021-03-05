@@ -75,7 +75,7 @@ comming soon
 ## Reference
 ```tex
 @inproceedings{bib:CMR,
-  title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive {2D-1D} Registration},
+  title={Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration},
   author={Chen, Xingyu and Liu, Yufeng and Ma, Chongyang and Chang, Jianlong and Wang, Huayan and Chen, Tian and Guo, Xiaoyan and Wan, Pengfei and Zheng, Wen},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2021}
