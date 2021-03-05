@@ -39,3 +39,4 @@ class BaseOptions():
         args = parser.parse_args()
 
         return args
+
