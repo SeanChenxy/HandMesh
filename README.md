@@ -13,6 +13,8 @@
 This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link](https://arxiv.org/pdf/2103.02845.pdf).
 
 ## Install 
++ Environment
+    ```
     conda create -n CMR python=3.6
     conda activate CMR
     ```
@@ -27,8 +29,6 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
 
 ## Run a demo
 ```
-+ Environment
-    ```
 ./demo.sh
 ```
 The prediction results will be saved in `out/FreiHAND/cmr_pg/demo` 
