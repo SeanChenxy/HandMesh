@@ -1,3 +1,9 @@
+# ------------------------------------------------------------------------------
+# Copyright (c) 2021
+# Licensed under the MIT License.
+# Written by Xingyu Chen(chenxingyusean@foxmail.com)
+# ------------------------------------------------------------------------------
+
 from __future__ import unicode_literals, print_function
 import numpy as np
 import cv2

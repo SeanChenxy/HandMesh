@@ -1,3 +1,9 @@
+# ------------------------------------------------------------------------------
+# Copyright (c) 2021
+# Licensed under the MIT License.
+# Written by Xingyu Chen(chenxingyusean@foxmail.com)
+# ------------------------------------------------------------------------------
+
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
