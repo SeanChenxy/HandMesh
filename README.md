@@ -23,6 +23,7 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
     ```
     pip install -r requirements.txt
     ```
+  If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
 + Download the pretrained model from [this link](https://drive.google.com/file/d/1xOzLlOGR8m6Q2Nh74Jiwd8CSVEMaKa3H/view?usp=sharing), and place it at `out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt` 
