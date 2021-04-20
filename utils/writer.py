@@ -24,8 +24,8 @@ class Writer:
         print(info)
 
     def print_info(self, info):
-        message = 'Epoch: {}/{}, Duration: {:.3f}s, Train Loss: {:.4f}, Test Loss: {:.4f}' \
-                .format(info['current_epoch'], info['epochs'], info['t_duration'], info['train_loss'], info['test_loss'])
+        message = 'Epoch: {}/{}, Duration: {:.3f}s, Train Loss: {:.4f}' \
+                .format(info['current_epoch'], info['epochs'], info['t_duration'], info['train_loss'])
         with open(self.log_file, 'a') as log_file:
             log_file.write('{:s}\n'.format(message))
         # print(message)
