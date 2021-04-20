@@ -38,19 +38,14 @@ class BaseOptions():
         parser.add_argument('--lr_scheduled', type=str, default='MultiStep')
         parser.add_argument('--lr', type=float, default=1e-4)
         parser.add_argument('--lr_decay', type=float, default=0.1)
-        parser.add_argument('--decay_step', type=int, nargs='+', default=[90, 120])
+        parser.add_argument('--decay_step', type=int, nargs='+', default=[30, ])
         parser.add_argument('--weight_decay', type=float, default=0)
 
         # training hyperparameters
         parser.add_argument('--phase', type=str, default='train')
         parser.add_argument('--batch_size', type=int, default=32)
-        parser.add_argument('--epochs', type=int, default=150)
+        parser.add_argument('--epochs', type=int, default=38)
         parser.add_argument('--resume', type=str, default='')
-        parser.add_argument('--resume_fh', type=str, default='')
-        parser.add_argument('--save_sample_dir', type=str, default='')
-        parser.add_argument('--train_set', type=str, default='training')
-        parser.add_argument('--test_set', type=str, default='')
-        parser.add_argument('--vis', type=self.str2bool, default='no')
 
         # others
         # parser.add_argument('--seed', type=int, default=1)
