@@ -30,13 +30,14 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
 
 ## Run a demo
 ```
-./demo.sh
+./scripts/demo.sh
 ```
 The prediction results will be saved in `out/FreiHAND/cmr_pg/demo` 
 
-## Evaluation on FreiHAND
-#### Dataset
-Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-freiburg.de/projects/freihand/), and create a soft link in `data`, i.e., `data/FreiHAND`.
+## Dataset
+#### FreiHAND
++ Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-freiburg.de/projects/freihand/), and create a soft link in `data`, i.e., `data/FreiHAND`.
++ Downdownload mesh GT file form [this link](https://drive.google.com/file/d/1hutsbecc0eFWZFvPclBso9IfYWcVM3iF/view?usp=sharing), and unzip it under `data/FreiHAND/train`
 ```  
 ${ROOT}  
 |-- data  
@@ -55,9 +56,9 @@ ${ROOT}
 |   |   |-- training_xyz.json
 ```  
 
-#### Run
+## Evaluation
 ```
-./eval_freihand.sh
+./scripts/eval_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 + If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
@@ -76,8 +77,9 @@ ${ROOT}
     + Here, you can get more 3D details through rotation and zoom in.
 
 ## Training
-comming soon
-
+```
+./scripts/eval_freihand.sh
+```
 ## Reference
 ```tex
 @inproceedings{bib:CMR,
