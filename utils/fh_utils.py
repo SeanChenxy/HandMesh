@@ -209,16 +209,18 @@ def read_img(idx, base_path, set_name, version=None):
     if set_name == 'evaluation':
         assert version == sample_version.gs, 'This the only valid choice for samples from the evaluation split.'
 
-    split = 'rgb2' if sample_version.map_id(idx, version) >= 90000 else 'rgb'
-    img_rgb_path = os.path.join(base_path, set_name, split,
-                                '%08d.jpg' % sample_version.map_id(idx, version))
+    img_rgb_path = os.path.join(base_path, set_name, 'rgb', '%08d.jpg' % sample_version.map_id(idx, version))
+    if not os.path.exists(img_rgb_path):
+        img_rgb_path = os.path.join(base_path, set_name, 'rgb2', '%08d.jpg' % idx)
+
     _assert_exist(img_rgb_path)
     return io.imread(img_rgb_path)
 
 
 def read_img_abs(idx, base_path, set_name):
-    split = 'rgb2' if idx >= 90000 else 'rgb'
-    img_rgb_path = os.path.join(base_path, set_name, split, '%08d.jpg' % idx)
+    img_rgb_path = os.path.join(base_path, set_name, 'rgb', '%08d.jpg' % idx)
+    if not os.path.exists(img_rgb_path):
+        img_rgb_path = os.path.join(base_path, set_name, 'rgb2', '%08d.jpg' % idx)
 
     _assert_exist(img_rgb_path)
     return io.imread(img_rgb_path)

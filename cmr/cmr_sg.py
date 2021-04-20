@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from .network import ConvBlock, SpiralConv, Pool, ParallelDeblock, SelfAttention
 from .resnet import resnet18, resnet50
-
+from .loss import l1_loss, bce_loss, normal_loss, edge_length_loss
 
 class EncodeStage1(nn.Module):
     def __init__(self, backbone):
@@ -225,6 +225,24 @@ class CMR_SG(nn.Module):
         return {'mesh_pred': pred3,
                 'uv_pred': pred4[:, :self.uv_channel],
                 'mask_pred': pred4[:, self.uv_channel],
-                'uv_prior': pred1,
-                'uv_prior2': pred2,
+                'mask_prior': pred1[:, 0],
+                'uv_prior': pred2,
                 }
+
+    def loss(self, **kwargs):
+        loss_dict = dict()
+        loss = 0.
+        for i in range(len(kwargs['gt'])):
+            loss += l1_loss(kwargs['pred'][i], kwargs['gt'][i])
+            if i == 0:
+                loss_dict['l1_loss'] = loss.clone()
+        loss_dict['uv_loss'] = 10 * bce_loss(kwargs['uv_pred'], kwargs['uv_gt'])
+        loss_dict['uv_prior_loss'] = 10 * bce_loss(kwargs['uv_prior'], kwargs['uv_gt'])
+        loss_dict['mask_loss'] = 0.5 * bce_loss(kwargs['mask_pred'], kwargs['mask_gt'])
+        loss_dict['mask_prior_loss'] = 0.5 * bce_loss(kwargs['mask_prior'], kwargs['mask_gt'])
+        loss_dict['normal_loss'] = 0.1 * normal_loss(kwargs['pred'][0], kwargs['gt'][0], kwargs['face'])
+        loss_dict['edge_loss'] = edge_length_loss(kwargs['pred'][0], kwargs['gt'][0], kwargs['face'])
+        loss += loss_dict['uv_loss'] + loss_dict['normal_loss'] + loss_dict['edge_loss'] + loss_dict['uv_prior_loss'] + loss_dict['mask_loss'] + loss_dict['mask_prior_loss']
+        loss_dict['loss'] = loss
+
+        return loss_dict

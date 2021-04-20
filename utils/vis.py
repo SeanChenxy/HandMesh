@@ -11,8 +11,8 @@ from datasets.FreiHAND.kinematics import  mano_to_mpii
 from scipy.optimize import minimize
 
 
-def base_transform(img, size, mean=128, std=128):
-    x = cv2.resize(img, (size, size)).astype(np.float32)
+def base_transform(img, size, mean=0.5, std=0.5):
+    x = cv2.resize(img, (size, size)).astype(np.float32) / 255
     x -= mean
     x /= std
     x = x.transpose(2, 0, 1)
@@ -20,9 +20,9 @@ def base_transform(img, size, mean=128, std=128):
     return x
 
 
-def inv_base_transform(x, mean=128, std=128):
+def inv_base_tranmsform(x, mean=0.5, std=0.5):
     x = x.transpose(1, 2, 0)
-    image = x * std + mean
+    image = (x * std + mean) * 255
     return image.astype(np.uint8)
 
 
@@ -155,7 +155,58 @@ def map2uv(map, size=(224, 224)):
     return uv, uv_conf
 
 
+def uv2map(uv, size=(224, 224)):
+    kernel_size = (size[0] * 13 // size[0] - 1) // 2
+    gaussian_map = np.zeros((uv.shape[0], size[0], size[1]))
+    size_transpose = np.array(size)
+    gaussian_kernel = cv2.getGaussianKernel(2 * kernel_size + 1, (2 * kernel_size + 2)/4.)
+    gaussian_kernel = np.dot(gaussian_kernel, gaussian_kernel.T)
+    gaussian_kernel = gaussian_kernel/gaussian_kernel.max()
+
+    for i in range(gaussian_map.shape[0]):
+        if (uv[i] >= 0).prod() == 1 and (uv[i][1] <= size_transpose[0]) and (uv[i][0] <= size_transpose[1]):
+            s_pt = np.array((uv[i][1], uv[i][0]))
+            p_start = s_pt - kernel_size
+            p_end = s_pt + kernel_size
+            p_start_fix = (p_start >= 0) * p_start + (p_start < 0) * 0
+            k_start_fix = (p_start >= 0) * 0 + (p_start < 0) * (-p_start)
+            p_end_fix = (p_end <= (size_transpose - 1)) * p_end + (p_end > (size_transpose - 1)) * (size_transpose - 1)
+            k_end_fix = (p_end <= (size_transpose - 1)) * kernel_size * 2 + (p_end > (size_transpose - 1)) * (2*kernel_size - (p_end - (size_transpose - 1)))
+            gaussian_map[i, p_start_fix[0]: p_end_fix[0] + 1, p_start_fix[1]: p_end_fix[1] + 1] = \
+                gaussian_kernel[k_start_fix[0]: k_end_fix[0] + 1, k_start_fix[1]: k_end_fix[1] + 1]
+
+    return gaussian_map
+
+
 def cnt_area(cnt):
     area = cv2.contourArea(cnt)
     return area
 
+
+def tensor2array(tensor, max_value=None, colormap='jet', channel_first=True, mean=0.5, std=0.5):
+    tensor = tensor.detach().cpu()
+    if max_value is None:
+        max_value = tensor.max().item()
+    if tensor.ndimension() == 2 or tensor.size(0) == 1:
+        try:
+            color_cvt = cv2.COLOR_BGR2RGB
+            if colormap == 'jet':
+                colormap = cv2.COLORMAP_JET
+            elif colormap == 'bone':
+                colormap = cv2.COLORMAP_BONE
+            array = (255 * tensor.squeeze().numpy() / max_value).clip(0, 255).astype(np.uint8)
+            colored_array = cv2.applyColorMap(array, colormap)
+            array = cv2.cvtColor(colored_array, color_cvt).astype(np.float32)/255
+        except ImportError:
+            if tensor.ndimension() == 2:
+                tensor.unsqueeze_(2)
+            array = (tensor.expand(tensor.size(0), tensor.size(1), 3).numpy() / max_value).clip(0, 1)
+        if channel_first:
+            array = array.transpose(2, 0, 1)
+    elif tensor.ndimension() == 3:
+        assert (tensor.size(0) == 3)
+        array = ((mean + tensor.numpy() * std) * 255).astype(np.uint8)
+        if not channel_first:
+            array = array.transpose(1, 2, 0)
+
+    return array
