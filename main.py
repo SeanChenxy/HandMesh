@@ -20,7 +20,8 @@ if __name__ == '__main__':
     data_fp = osp.join(args.work_dir, 'data', args.dataset)
     args.out_dir = osp.join(args.work_dir, 'out', args.dataset, args.exp_name)
     args.checkpoints_dir = osp.join(args.out_dir, 'checkpoints')
-    utils.makedirs(osp.join(args.out_dir, args.phase))
+    if args.phase in ['eval', 'demo']:
+        utils.makedirs(osp.join(args.out_dir, args.phase))
     utils.makedirs(args.out_dir)
     utils.makedirs(args.checkpoints_dir)
 

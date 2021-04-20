@@ -167,8 +167,9 @@ class Runner(object):
                 vertex2xyz = mano_to_mpii(np.matmul(self.j_regressor, vertex))
                 xyz_pred_list.append(vertex2xyz)
                 verts_pred_list.append(vertex)
-                save_a_image_with_mesh_joints(inv_base_tranmsform(data['img'][0].cpu().numpy())[:, :, ::-1], mask_pred, poly, data['K'][0].cpu().numpy(), vertex, self.faces[0], uv_point_pred[0], vertex2xyz,
-                                              os.path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
+                # if args.phase == 'eval':
+                #     save_a_image_with_mesh_joints(inv_base_tranmsform(data['img'][0].cpu().numpy())[:, :, ::-1], mask_pred, poly, data['K'][0].cpu().numpy(), vertex, self.faces[0], uv_point_pred[0], vertex2xyz,
+                #                               os.path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
                 bar.suffix = '({batch}/{size})' .format(batch=step+1, size=len(self.eval_loader))
                 bar.next()
         bar.finish()
