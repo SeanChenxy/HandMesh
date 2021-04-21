@@ -37,7 +37,7 @@ The prediction results will be saved in `out/FreiHAND/cmr_pg/demo`
 ## Dataset
 #### FreiHAND
 + Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-freiburg.de/projects/freihand/), and create a soft link in `data`, i.e., `data/FreiHAND`.
-+ Downdownload mesh GT file form [this link](https://drive.google.com/file/d/1hutsbecc0eFWZFvPclBso9IfYWcVM3iF/view?usp=sharing), and unzip it under `data/FreiHAND/train`
++ Downdownload mesh GT file form [this link](https://drive.google.com/file/d/1hutsbecc0eFWZFvPclBso9IfYWcVM3iF/view?usp=sharing), and unzip it under `data/FreiHAND/training`
 ```  
 ${ROOT}  
 |-- data  
@@ -78,7 +78,7 @@ ${ROOT}
 
 ## Training
 ```
-./scripts/eval_freihand.sh
+./scripts/train_freihand.sh
 ```
 ## Reference
 ```tex
