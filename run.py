@@ -190,7 +190,7 @@ class Runner(object):
             for step, image_path in enumerate(image_files):
                 image_name = image_path.split('/')[-1].split('_')[0]
                 image = cv2.imread(image_path)[..., ::-1]
-                input = torch.from_numpy(base_transform(image, size=224)).unsqueeze(0)
+                input = torch.from_numpy(base_transform(image, size=224)).unsqueeze(0).to(self.device)
                 K = np.load(image_path.replace('_img.jpg', '_K.npy'))
 
                 out = self.model(input)
