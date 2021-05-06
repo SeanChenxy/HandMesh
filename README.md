@@ -95,3 +95,6 @@ ${ROOT}
   year={2021}
 }
 ```
+
+## Acknowledgement
+Our implementation of SpiralConv is based on [spiralnet_plus](https://github.com/sw-gong/spiralnet_plus?utm_source=catalyzex.com).
