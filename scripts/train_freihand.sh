@@ -1,8 +1,8 @@
 phase='train'
-exp_name='cmr_pg_train'
+exp_name='cmr_sg_train'
 backbone='ResNet18'
 dataset='FreiHAND'
-model='cmr_pg'
+model='cmr_sg'
 python main.py \
     --phase $phase \
     --exp_name $exp_name \
