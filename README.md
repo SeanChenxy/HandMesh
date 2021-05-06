@@ -26,7 +26,13 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
   If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
-+ Download the pretrained model from [this link](https://drive.google.com/file/d/1xOzLlOGR8m6Q2Nh74Jiwd8CSVEMaKa3H/view?usp=sharing), and place it at `out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt` 
++ Download the pretrained model for [CMR-SG](https://drive.google.com/file/d/1xOzLlOGR8m6Q2Nh74Jiwd8CSVEMaKa3H/view?usp=sharing) or [CMR-PG](https://drive.google.com/file/d/1Lfz2Tjo8opjCZbcmyIYhqQcGwhasIsvp/view)
+  and place it at 
+  ```
+  out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
+  out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt
+  ``` 
+
 
 ## Run a demo
 ```
@@ -61,7 +67,7 @@ ${ROOT}
 ./scripts/eval_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
-+ If you want to save prediction results like above demo, you would want to uncomment Line 86 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
++ If you want to save prediction results like above demo, you would want to uncomment Line 170 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
 
 ## Explaination of the output
 
