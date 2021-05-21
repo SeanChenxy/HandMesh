@@ -102,7 +102,7 @@ class CMR_G(nn.Module):
         self.uv_head2 = ConvBlock(self.latent_size[4], self.uv_channel+1, kernel_size=3, padding=1, relu=False, norm=None)
 
         # 3D decoding
-        self.attention = SelfAttention(self.latent_size[0])
+        # self.attention = SelfAttention(self.latent_size[0])
         self.de_layers = nn.ModuleList()
         self.de_layers.append(nn.Linear(self.latent_size[0], self.num_vert[-1] * self.out_channels[-1]))
         for idx in range(len(self.out_channels)):
@@ -129,7 +129,7 @@ class CMR_G(nn.Module):
         return basenet, latent_channel
 
     def decoder(self, x):
-        x = self.attention(x)
+        # x = self.attention(x)
         num_layers = len(self.de_layers)
         num_features = num_layers - 1
         hierachy_pred = []
