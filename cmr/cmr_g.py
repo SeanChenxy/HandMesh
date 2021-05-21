@@ -193,10 +193,9 @@ class CMR_G(nn.Module):
         loss_dict['uv_loss'] = 10 * bce_loss(kwargs['uv_pred'], kwargs['uv_gt'])
         loss_dict['uv_prior_loss'] = 10 * bce_loss(kwargs['uv_prior'], kwargs['uv_gt'])
         loss_dict['mask_loss'] = 0.5 * bce_loss(kwargs['mask_pred'], kwargs['mask_gt'])
-        loss_dict['mask_prior_loss'] = 0.5 * bce_loss(kwargs['mask_prior'], kwargs['mask_gt'])
         loss_dict['normal_loss'] = 0.1 * normal_loss(kwargs['pred'][0], kwargs['gt'][0], kwargs['face'])
         loss_dict['edge_loss'] = edge_length_loss(kwargs['pred'][0], kwargs['gt'][0], kwargs['face'])
-        loss += loss_dict['uv_loss'] + loss_dict['normal_loss'] + loss_dict['edge_loss'] + loss_dict['uv_prior_loss'] + loss_dict['mask_loss'] + loss_dict['mask_prior_loss']
+        loss += loss_dict['uv_loss'] + loss_dict['normal_loss'] + loss_dict['edge_loss'] + loss_dict['uv_prior_loss'] + loss_dict['mask_loss']
         loss_dict['loss'] = loss
 
         return loss_dict
