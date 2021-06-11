@@ -9,8 +9,13 @@
 <img src="./images/video2.gif" width="672" height="112">
 </p>
 
+
 ## Introduction
 This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link](https://arxiv.org/pdf/2103.02845.pdf).
+
+## Update
++ 2021-6-10, Add Human3.6M dataset.
++ 2021-5-20, Add CMR-G model.
 
 ## Install 
 + Environment
@@ -18,7 +23,7 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
     conda create -n CMR python=3.6
     conda activate CMR
     ```
-+ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.5.0, torchvision=0.6.0
++ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.7.1, torchvision=0.8.2
 + Requirements
     ```
     pip install -r requirements.txt
@@ -26,25 +31,43 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
   If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
-+ Download the pretrained model for [CMR-G](https://drive.google.com/file/d/1s8fCrITQSnaxRm6tEEM7igMMdzbf3OQk/view?usp=sharing), [CMR-SG](https://drive.google.com/file/d/1xOzLlOGR8m6Q2Nh74Jiwd8CSVEMaKa3H/view?usp=sharing) or [CMR-PG](https://drive.google.com/file/d/1Lfz2Tjo8opjCZbcmyIYhqQcGwhasIsvp/view)
-  and place it at 
-  ```
-  out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
-  out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
-  out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt
-  ``` 
-
++ Download the files you need from [Google drive](https://drive.google.com/drive/folders/1MIE0Jo01blG6RWo2trQbXlQ92tMOaLx_?usp=sharing).
 
 ## Run a demo
-```
-./scripts/demo.sh
-```
-The prediction results will be saved in `out/FreiHAND/cmr_pg/demo` 
++ Prepare pre-trained models as
+  ```
+  out/Human36M/cmr_g/checkpoints/cmr_g_res18_human36m.pt
+  out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
+  out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
+  out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
+  ``` 
++ Run
+  ```
+  ./scripts/demo.sh
+  ```
+  The prediction results will be saved in `out/FreiHAND/cmr_pg/demo`.
+
++  Explaination of the output
+
+    <p align="middle">  
+    <img src="./images/2299_plot.jpg">  
+    </p> 
+
+    + In an JPEG file (e.g., 000_plot.jpg), we show silhouette, 2D pose, projection of mesh, camera-space mesh and pose
+    + As for camera-space information, we use a red rectangle to indicate the camera position, or the image plane. The unit is meter.
+    + If you run the demo, you can also obtain a PLY file (e.g., 000_mesh.ply). 
+        + This file is a 3D model of the hand.
+        + You can open it with corresponding software (e.g., Preview in Mac).
+        + Here, you can get more 3D details through rotation and zoom in.
 
 ## Dataset
 #### FreiHAND
 + Please download FreiHAND dataset from [this link](https://lmb.informatik.uni-freiburg.de/projects/freihand/), and create a soft link in `data`, i.e., `data/FreiHAND`.
-+ Downdownload mesh GT file form [this link](https://drive.google.com/file/d/1hutsbecc0eFWZFvPclBso9IfYWcVM3iF/view?usp=sharing), and unzip it under `data/FreiHAND/training`
++ Download mesh GT file `freihand_train_mesh.zip`, and unzip it under `data/FreiHAND/training`
+#### Human3.6M
++ The official data is now not avaliable. Please follow [I2L repo](https://github.com/mks0601/I2L-MeshNet_RELEASE) to download it.
++ Download silhouette GT file `h36m_mask.zip`, and unzip it under `data/Human36M`.
+#### Data dir
 ```  
 ${ROOT}  
 |-- data  
@@ -61,31 +84,35 @@ ${ROOT}
 |   |   |-- training_K.json
 |   |   |-- training_mano.json
 |   |   |-- training_xyz.json
+|   |-- Human3.6M
+|   |   |-- images
+|   |   |-- mask
+|   |   |-- annotations
 ```  
 
 ## Evaluation
+#### FreiHAND
 ```
 ./scripts/eval_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
-+ If you want to save prediction results like above demo, you would want to uncomment Line 170 in `run.py`. The prediction results will be saved in `out/FreiHAND/cmr_sg/eval`.
 
-## Explaination of the output
-
-<p align="middle">  
-<img src="./images/2299_plot.jpg">  
-</p> 
-
-+ In an JPEG file (e.g., 000_plot.jpg), we show silhouette, 2D pose, projection of mesh, camera-space mesh and pose
-+ As for camera-space information, we use a red rectangle to indicate the camera position, or the image plane. The unit is meter.
-+ If you run the demo, you can also obtain a PLY file (e.g., 000_mesh.ply). 
-    + This file is a 3D model of the hand.
-    + You can open it with corresponding software (e.g., Preview in Mac).
-    + Here, you can get more 3D details through rotation and zoom in.
+#### Human3.6M
+```
+./scripts/eval_human36m.sh
+```
+#### Performance on PA-MPJPE (mm)
+We re-produce the following results after code re-organization.
+|  Model / Dataset   | FreiHAND  | Human3.6M (w/o COCO) |
+|  :----:  | :----:  |:----:  |
+| CMR-G-ResNet18   | 7.6 | - |
+| CMR-SG-ResNet18  | 7.5 | - |
+| CMR-PG-ResNet18  | 7.5 | 50.0 |
 
 ## Training
 ```
 ./scripts/train_freihand.sh
+./scripts/train_human36m.sh
 ```
 ## Reference
 ```tex

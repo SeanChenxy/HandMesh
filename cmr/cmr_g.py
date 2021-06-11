@@ -77,9 +77,11 @@ class CMR_G(nn.Module):
         self.spiral_indices = spiral_indices
         self.up_transform = up_transform
         self.num_vert = [u.size(0) for u in self.up_transform] + [self.up_transform[-1].size(1)]
-        self.uv_channel = 21
-        self.relation = [[4, 8], [4, 12], [4, 16], [4, 20], [8, 12], [8, 16], [8, 20], [12, 16], [12, 20], [16, 20], [1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20]]
-
+        self.uv_channel = 17 if args.dataset=='Human36M' else 21
+        self.relation = [[3, 6], [3, 13], [3, 16], [3, 10], [6, 13], [6, 16], [6, 10], [13, 16], [13, 10], [16, 10]] \
+                        if args.dataset=='Human36M' else [[4, 8], [4, 12], [4, 16], [4, 20], [8, 12], [8, 16], [8, 20], [12, 16], [12, 20], [16, 20], [1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20]]
+        self.att = args.att
+        
         backbone, self.latent_size = self.get_backbone(args.backbone)
         self.backbone = EncodeUV(backbone)
 
@@ -102,7 +104,8 @@ class CMR_G(nn.Module):
         self.uv_head2 = ConvBlock(self.latent_size[4], self.uv_channel+1, kernel_size=3, padding=1, relu=False, norm=None)
 
         # 3D decoding
-        # self.attention = SelfAttention(self.latent_size[0])
+        if self.att:
+            self.attention = SelfAttention(self.latent_size[0])
         self.de_layers = nn.ModuleList()
         self.de_layers.append(nn.Linear(self.latent_size[0], self.num_vert[-1] * self.out_channels[-1]))
         for idx in range(len(self.out_channels)):
@@ -129,7 +132,8 @@ class CMR_G(nn.Module):
         return basenet, latent_channel
 
     def decoder(self, x):
-        # x = self.attention(x)
+        if self.att:
+            x = self.attention(x)
         num_layers = len(self.de_layers)
         num_features = num_layers - 1
         hierachy_pred = []

@@ -16,10 +16,7 @@ class BaseOptions():
         parser.add_argument('--pos_aug', type=float, default=3)
         parser.add_argument('--rot_aug', type=float, default=90)
         parser.add_argument('--color_aug', type=self.str2bool, default='yes')
-        parser.add_argument('--flip_aug', type=self.str2bool, default='no')
         parser.add_argument('--size', type=int, default=224)
-        parser.add_argument('--img_mean', type=float, default=0.5)
-        parser.add_argument('--img_std', type=float, default=0.5)
         parser.add_argument('--ms_mesh', type=self.str2bool, default='yes')
 
         # network hyperparameters

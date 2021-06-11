@@ -8,6 +8,7 @@ from utils.read import spiral_tramsform
 from utils import utils, writer
 from options.base_options import BaseOptions
 from datasets.FreiHAND.freihand import FreiHAND
+from datasets.Human36M.human36m import Human36M
 from torch.utils.data import DataLoader
 from run import Runner
 from termcolor import cprint
@@ -40,8 +41,12 @@ if __name__ == '__main__':
     cudnn.benchmark = True
     cudnn.deterministic = True
 
-    template_fp = osp.join(args.work_dir, 'template', 'template.ply')
-    transform_fp = osp.join(args.work_dir, 'template', 'transform.pkl')
+    if args.dataset=='Human36M':
+        template_fp = osp.join(args.work_dir, 'template', 'template_body.ply')
+        transform_fp = osp.join(args.work_dir, 'template', 'transform_body.pkl')
+    else:
+        template_fp = osp.join(args.work_dir, 'template', 'template.ply')
+        transform_fp = osp.join(args.work_dir, 'template', 'transform.pkl')
     spiral_indices_list, down_transform_list, up_transform_list, tmp = spiral_tramsform(transform_fp, template_fp, args.ds_factors, args.seq_length, args.dilation)
 
     # model
@@ -62,6 +67,8 @@ if __name__ == '__main__':
         else:
             model_path = osp.join(args.checkpoints_dir, args.resume)
         checkpoint = torch.load(model_path, map_location='cpu')
+        if checkpoint.get('model_state_dict', None) is not None:
+            checkpoint = checkpoint['model_state_dict']
         model.load_state_dict(checkpoint)
         epoch = checkpoint.get('epoch', -1) + 1
         cprint('Load checkpoint {}'.format(model_path), 'yellow')
@@ -74,26 +81,40 @@ if __name__ == '__main__':
         writer = writer.Writer(args)
         writer.print_str(args)
         # dataset
-        eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'], img_std=args.img_std, img_mean=args.img_mean)
-        eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
-        runner.set_eval_loader(eval_loader)
-        train_dataset = FreiHAND(data_fp, 'training', args, tmp['face'], writer=writer,
-                                 down_sample_list=down_transform_list,  img_std=args.img_std, img_mean=args.img_mean, ms=args.ms_mesh)
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=16, drop_last=True)
+        if args.dataset=='FreiHAND':
+            eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'])
+            eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
+            train_dataset = FreiHAND(data_fp, 'training', args, tmp['face'], writer=writer, down_sample_list=down_transform_list, ms=args.ms_mesh)
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=16, drop_last=True)
+        elif args.dataset=='Human36M':
+            eval_dataset = Human36M(data_fp, 'test', args, down_transform_list, tmp['face'])
+            eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
+            train_dataset = Human36M(data_fp, 'train', args, down_transform_list, tmp['face'])
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=16, drop_last=True)
+        else:
+            raise Exception('Dataset not support')
         # optimize
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, args.decay_step, gamma=args.lr_decay)
         # tensorboard
         board = SummaryWriter(osp.join(args.out_dir, 'board'))
         runner.set_train_loader(train_loader, args.epochs, optimizer, scheduler, writer, board, start_epoch=epoch)
+        runner.set_eval_loader(eval_loader)
         runner.train()
     elif args.phase == 'eval':
         # dataset
-        eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'], img_std=args.img_std, img_mean=args.img_mean)
+        eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'])
         eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
         runner.set_eval_loader(eval_loader)
         runner.evaluation()
+    elif args.phase == 'eval_withgt':
+        # dataset
+        eval_dataset = Human36M(data_fp, 'test', args, down_transform_list, tmp['face'])
+        eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
+        runner.set_eval_loader(eval_loader)
+        runner.evaluation_withgt()
     elif args.phase == 'demo':
+        runner.set_demo(args)
         runner.demo()
     else:
         raise Exception('phase error')

@@ -12,6 +12,7 @@ from utils.progress.bar import Bar
 from termcolor import colored, cprint
 import pickle
 import time
+from utils.transforms import rigid_align
 
 
 class Runner(object):
@@ -21,13 +22,6 @@ class Runner(object):
         self.model = model
         self.faces = faces
         self.device = device
-        with open(os.path.join(self.args.work_dir, 'template', 'MANO_RIGHT.pkl'), 'rb') as f:
-            mano = pickle.load(f, encoding='latin1')
-        self.j_regressor = np.zeros([21, 778])
-        self.j_regressor[:16] = mano['J_regressor'].toarray()
-        for k, v in {16: 333, 17: 444, 18: 672, 19: 555, 20: 744}.items():
-            self.j_regressor[k, v] = 1
-        self.std = torch.tensor(0.20).to(self.device)
         self.face = torch.from_numpy(self.faces[0].astype(np.int64)).to(self.device)
 
     def set_train_loader(self, train_loader, epochs, optimizer, scheduler, writer, board, start_epoch=0):
@@ -41,11 +35,35 @@ class Runner(object):
         self.epoch = max(start_epoch - 1, 0)
         self.total_step = self.start_epoch * (len(self.train_loader.dataset) // self.writer.args.batch_size)
         self.loss = self.model.loss
+        if self.args.dataset=='Human36M':
+            self.j_regressor = self.train_loader.dataset.h36m_joint_regressor
+            self.j_eval = self.train_loader.dataset.h36m_eval_joint
+        else:
+            self.j_regressor = self.train_loader.dataset.j_regressor
+        self.std = train_loader.dataset.std.to(self.device)
 
     def set_eval_loader(self, eval_loader):
         self.eval_loader = eval_loader
+        if self.args.phase != 'train':
+            if self.args.dataset=='Human36M':
+                self.j_regressor = self.eval_loader.dataset.h36m_joint_regressor
+                self.j_eval = self.eval_loader.dataset.h36m_eval_joint
+            else:
+                self.j_regressor = self.eval_loader.dataset.j_regressor
+            self.std = eval_loader.dataset.std.to(self.device)
+            self.board = None
+    
+    def set_demo(self, args):
+        with open(os.path.join(args.work_dir, 'template', 'MANO_RIGHT.pkl'), 'rb') as f:
+            mano = pickle.load(f, encoding='latin1')
+        self.j_regressor = np.zeros([21, 778])
+        self.j_regressor[:16] = mano['J_regressor'].toarray()
+        for k, v in {16: 333, 17: 444, 18: 672, 19: 555, 20: 744}.items():
+            self.j_regressor[k, v] = 1
+        self.std = torch.tensor(0.20)
 
     def train(self):
+        best_error = np.float('inf')
         for epoch in range(self.start_epoch, self.max_epochs + 1):
             self.epoch = epoch
             t = time.time()
@@ -59,8 +77,13 @@ class Runner(object):
                 't_duration': t_duration
             }
             self.writer.print_info(info)
+            if self.args.dataset=='Human36M':
+                test_error = self.evaluation_withgt()
+                if test_error < best_error:
+                    best_error = test_error
+                    self.writer.save_checkpoint(self.model, self.optimizer, self.scheduler, self.epoch, best=True)
             self.writer.save_checkpoint(self.model, self.optimizer, self.scheduler, self.epoch, last=True)
-        if self.eval_loader is not None:
+        if self.args.dataset=='FreiHAND' and self.eval_loader is not None:
             self.evaluation()
 
     def board_img(self, phase, n_iter, img, **kwargs):
@@ -76,10 +99,9 @@ class Runner(object):
             self.board.add_image(phase + '/uv_prior', tensor2array(kwargs['uv_prior'][0].sum(dim=0).clamp(max=1)), n_iter)
 
     def board_scalar(self, phase, n_iter, lr=None, **kwargs):
-        split = '_' if 'train' in phase else '/'
         for key, val in kwargs.items():
             if 'loss' in key:
-                self.board.add_scalar(phase + split + key, val.item(), n_iter)
+                self.board.add_scalar(phase + '/' + key, val.item(), n_iter)
         if lr:
             self.board.add_scalar('lr', lr, n_iter)
 
@@ -179,6 +201,51 @@ class Runner(object):
         with open(os.path.join(args.out_dir, args.exp_name + '.json'), 'w') as fo:
             json.dump([xyz_pred_list, verts_pred_list], fo)
         cprint('Save json file at ' + os.path.join(args.out_dir, args.exp_name + '.json'), 'green')
+
+    def evaluation_withgt(self):
+        # self.writer.print_str('Eval error on set')
+        self.model.eval()
+        joint_errors = []
+        pa_joint_errors = []
+        duration = [0,]
+        bar = Bar(colored("TEST", color='yellow'), max=len(self.eval_loader))
+        with torch.no_grad():
+            for i, data in enumerate(self.eval_loader):
+                data = self.phrase_data(data)
+                t1 = time.time()
+                out = self.model(data['img'])
+                torch.cuda.synchronize()
+                if i > 10:
+                    duration.append((time.time()-t1)*1000)
+                gt = data['mesh_gt'][0] if isinstance(data['mesh_gt'], list) else data['mesh_gt']
+                xyz_gt = data['xyz_gt']
+                pred = out['mesh_pred'][0] if isinstance(out['mesh_pred'], list) else out['mesh_pred']
+                pred = (pred[0].cpu() * self.std.cpu()).numpy()
+                joint_pred = np.dot(self.j_regressor, pred)
+                gt = (gt[0].cpu() * self.std.cpu()).numpy()
+                xyz_gt = (xyz_gt[0].cpu() * self.std.cpu()).numpy()
+
+                rel_joint_pred = joint_pred[self.j_eval, :] * 1000
+                rel_joint_gt = xyz_gt[self.j_eval, :] * 1000
+                joint_errors.append(np.sqrt(np.sum((rel_joint_gt - rel_joint_pred) ** 2, axis=1)))
+                pa_joint_errors.append(np.sqrt(np.sum((rel_joint_gt - rigid_align(rel_joint_pred, rel_joint_gt)) ** 2, axis=1)))
+
+                bar.suffix = (
+                    '({batch}/{size}) '
+                    'MPJPE:{j:.3f} '
+                    'PA-MPJPE:{pa_j:.3f} '
+                    'T:{t:.0f}'
+                ).format(batch=i, size=len(self.eval_loader), j=np.array(joint_errors).mean(), pa_j=np.array(pa_joint_errors).mean(), t=np.array(duration).mean())
+                bar.next()
+        bar.finish()
+
+        j_error = np.array(joint_errors).mean()
+        pa_j_error = np.array(pa_joint_errors).mean()
+        if self.board is not None:
+            self.board_scalar('test', self.epoch, **{'j_loss': j_error, 'pa_j_loss': pa_j_error})
+            self.board_img('test', self.epoch, data['img'][0], uv_gt=data['uv_gt'], uv_pred=out['uv_pred'], mask_gt=data.get('mask_gt'), mask_pred=out.get('mask_pred'))
+
+        return pa_j_error
 
     def demo(self):
         args = self.args
