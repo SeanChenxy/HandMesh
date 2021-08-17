@@ -77,7 +77,6 @@ ${ROOT}
 |   |   |   |-- mask
 |   |   |   |-- mesh
 |   |   |-- evaluation
-|   |   |   |-- anno
 |   |   |   |-- rgb
 |   |   |-- evaluation_K.json
 |   |   |-- evaluation_scals.json
