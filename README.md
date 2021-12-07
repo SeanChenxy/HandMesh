@@ -10,7 +10,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 + 2021-6-10, Add Human3.6M dataset.
 + 2021-5-20, Add CMR-G model.
 
-# Features
+## Features
 - [x] SpiralNet++
 - [x] Sub-pose aggregation
 - [x] Adaptive 2D-1D registration for mesh-image alignment
