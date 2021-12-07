@@ -11,13 +11,13 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 + 2021-5-20, Add CMR-G model.
 
 # Features
--[x] SpiralNet++
--[x] Sub-pose aggregation
--[x] Adaptive 2D-1D registration for mesh-image alignment
--[x] DenseStack for 2D encoding
--[x] Feature lifting with MapReg and PVL
--[x] DSConv as an efficient mesh operator
--[ ] MobRecon training with consistency learning and complement data
+- [x] SpiralNet++
+- [x] Sub-pose aggregation
+- [x] Adaptive 2D-1D registration for mesh-image alignment
+- [x] DenseStack for 2D encoding
+- [x] Feature lifting with MapReg and PVL
+- [x] DSConv as an efficient mesh operator
+- [ ] MobRecon training with consistency learning and complement data
 
 ## Install 
 + Environment
