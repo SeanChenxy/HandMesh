@@ -147,7 +147,7 @@ def draw_3d_skeleton(pose_cam_xyz, image_size):
     fig.set_size_inches(float(image_size[0]) / fig.dpi, float(image_size[1]) / fig.dpi, forward=True)
 
     ax = plt.subplot(111, projection='3d')
-    marker_sz = 15
+    marker_sz = 10
     line_wd = 2
 
     for i, shape in enumerate(camera_shape):
@@ -241,7 +241,10 @@ def save_a_image_with_mesh_joints(image, mask, poly, cam_param, mesh_xyz, face, 
     :param padding:
     :return:
     """
-    img_mask = draw_silhouette(image, mask, poly)
+    if poly is not None:
+        img_mask = draw_silhouette(image, mask, poly)
+    else:
+        img_mask = image.copy()
     rend_img_overlay = draw_mesh(image, cam_param, mesh_xyz, face)
     skeleton_overlay = draw_2d_skeleton(image, pose_uv)
     skeleton_3d = draw_3d_skeleton(pose_xyz, image.shape[:2])

@@ -4,6 +4,7 @@ import torch.backends.cudnn as cudnn
 from cmr.cmr_sg import CMR_SG
 from cmr.cmr_pg import CMR_PG
 from cmr.cmr_g import CMR_G
+from mobrecon.mobrecon_densestack import MobRecon
 from utils.read import spiral_tramsform
 from utils import utils, writer
 from options.base_options import BaseOptions
@@ -56,6 +57,10 @@ if __name__ == '__main__':
         model = CMR_PG(args, spiral_indices_list, up_transform_list)
     elif args.model == 'cmr_g':
         model = CMR_G(args, spiral_indices_list, up_transform_list)
+    elif args.model == 'mobrecon':
+        for i in range(len(up_transform_list)):
+            up_transform_list[i] = (*up_transform_list[i]._indices(), up_transform_list[i]._values())
+        model = MobRecon(args, spiral_indices_list, up_transform_list)
     else:
         raise Exception('Model {} not support'.format(args.model))
 

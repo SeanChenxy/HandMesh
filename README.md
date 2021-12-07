@@ -1,27 +1,29 @@
 
-# Camera-Space Hand Mesh Recovery via Semantic Aggregation and Adaptive 2D-1D Registration
-
-<p align="center">
-<img src="./images/demo.jpg" width="672" height="448">  
-<p align="center">
-
-<p align="center">
-<img src="./images/video2.gif" width="672" height="112">
-</p>
+# Hand Mesh Reconstruction
 
 
 ## Introduction
-This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mesh Recovery via Semantic Aggregationand Adaptive 2D-1D Registration". You can find this paper from [this link](https://arxiv.org/pdf/2103.02845.pdf).
+This repo is the PyTorch implementation of hand mesh reconstruction described in [CMR](https://arxiv.org/abs/2103.02845) and [MobRecon](https://arxiv.org/abs/2112.02753).
 
 ## Update
++ 2021-12.7, Add MobRecon demo.
 + 2021-6-10, Add Human3.6M dataset.
 + 2021-5-20, Add CMR-G model.
+
+# Features
+-[x] SpiralNet++
+-[x] Sub-pose aggregation
+-[x] Adaptive 2D-1D registration for mesh-image alignment
+-[x] DenseStack for 2D encoding
+-[x] Feature lifting with MapReg and PVL
+-[x] DSConv as an efficient mesh operator
+-[ ] MobRecon training with consistency learning and complement data
 
 ## Install 
 + Environment
     ```
-    conda create -n CMR python=3.6
-    conda activate CMR
+    conda create -n handmesh python=3.6
+    conda activate handmesh
     ```
 + Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.7.1, torchvision=0.8.2
 + Requirements
@@ -40,12 +42,14 @@ This repo is the PyTorch implementation of CVPR2021 paper "Camera-Space Hand Mes
   out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
   out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
   out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
+  out/FreiHAND/mobrecon/checkpoints/mobrecon_densestack_dsconv.pt  
   ``` 
 + Run
   ```
-  ./scripts/demo.sh
+  ./scripts/demo_cmr.sh
+  ./scripts/demo_mobrecon.sh
   ```
-  The prediction results will be saved in `out/FreiHAND/cmr_pg/demo`.
+  The prediction results will be saved in output directory, e.g., `out/FreiHAND/mobrecon/demo`.
 
 +  Explaination of the output
 
@@ -92,26 +96,29 @@ ${ROOT}
 ## Evaluation
 #### FreiHAND
 ```
-./scripts/eval_freihand.sh
+./scripts/eval_cmr_freihand.sh
+./scripts/eval_mobrecon_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 
 #### Human3.6M
 ```
-./scripts/eval_human36m.sh
+./scripts/eval_cmr_human36m.sh
 ```
 #### Performance on PA-MPJPE (mm)
 We re-produce the following results after code re-organization.
+
 |  Model / Dataset   | FreiHAND  | Human3.6M (w/o COCO) |
 |  :----:  | :----:  |:----:  |
 | CMR-G-ResNet18   | 7.6 | - |
 | CMR-SG-ResNet18  | 7.5 | - |
 | CMR-PG-ResNet18  | 7.5 | 50.0 |
+| MobRecon-DenseStack  | 6.9 | - |
 
 ## Training
 ```
-./scripts/train_freihand.sh
-./scripts/train_human36m.sh
+./scripts/train_cmr_freihand.sh
+./scripts/train_cmr_human36m.sh
 ```
 ## Reference
 ```tex
@@ -120,6 +127,13 @@ We re-produce the following results after code re-organization.
   author={Chen, Xingyu and Liu, Yufeng and Ma, Chongyang and Chang, Jianlong and Wang, Huayan and Chen, Tian and Guo, Xiaoyan and Wan, Pengfei and Zheng, Wen},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2021}
+}
+@article{bib:MobRecon,
+  title={MobRecon: Mobile-Friendly Hand Mesh Reconstruction from Monocular Image},
+  author={Chen, Xingyu and Liu, Yufeng and Dong Yajiao and Zhang, Xiong and Ma, Chongyang and Xiong, Yanmin and Zhang, Yuan and Guo, Xiaoyan},
+  journal={arXiv:2112.02753},
+  year={2021}
+}
 }
 ```
 

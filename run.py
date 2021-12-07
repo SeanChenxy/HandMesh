@@ -183,7 +183,11 @@ class Runner(object):
                 # vertex
                 pred = out['mesh_pred'][0] if isinstance(out['mesh_pred'], list) else out['mesh_pred']
                 vertex = (pred[0].cpu() * self.std.cpu()).numpy()
-                uv_point_pred, uv_pred_conf = map2uv(out['uv_pred'].cpu().numpy(), (data['img'].size(2), data['img'].size(3)))
+                uv_pred = out['uv_pred']
+                if uv_pred.ndim == 4:
+                    uv_point_pred, uv_pred_conf = map2uv(uv_pred.cpu().numpy(), (data['img'].size(2), data['img'].size(3)))
+                else:
+                    uv_point_pred, uv_pred_conf = (uv_pred * args.size).cpu().numpy(), [None,]
                 vertex, align_state = registration(vertex, uv_point_pred[0], self.j_regressor, data['K'][0].cpu().numpy(), args.size, uv_conf=uv_pred_conf[0], poly=poly)
 
                 vertex2xyz = mano_to_mpii(np.matmul(self.j_regressor, vertex))
@@ -191,7 +195,7 @@ class Runner(object):
                 verts_pred_list.append(vertex)
                 # if args.phase == 'eval':
                 #     save_a_image_with_mesh_joints(inv_base_tranmsform(data['img'][0].cpu().numpy())[:, :, ::-1], mask_pred, poly, data['K'][0].cpu().numpy(), vertex, self.faces[0], uv_point_pred[0], vertex2xyz,
-                #                               os.path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
+                #                               os. path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
                 bar.suffix = '({batch}/{size})' .format(batch=step+1, size=len(self.eval_loader))
                 bar.next()
         bar.finish()
@@ -257,8 +261,13 @@ class Runner(object):
             for step, image_path in enumerate(image_files):
                 image_name = image_path.split('/')[-1].split('_')[0]
                 image = cv2.imread(image_path)[..., ::-1]
-                input = torch.from_numpy(base_transform(image, size=224)).unsqueeze(0).to(self.device)
+                image = cv2.resize(image, (args.size, args.size))
+                input = torch.from_numpy(base_transform(image, size=args.size)).unsqueeze(0).to(self.device)
                 K = np.load(image_path.replace('_img.jpg', '_K.npy'))
+                K[0, 0] = K[0, 0] / 224 * args.size
+                K[1, 1] = K[1, 1] / 224 * args.size
+                K[0, 2] = args.size // 2
+                K[1, 2] = args.size // 2
 
                 out = self.model(input)
                 # silhouette
@@ -278,7 +287,11 @@ class Runner(object):
                 # vertex
                 pred = out['mesh_pred'][0] if isinstance(out['mesh_pred'], list) else out['mesh_pred']
                 vertex = (pred[0].cpu() * self.std.cpu()).numpy()
-                uv_point_pred, uv_pred_conf = map2uv(out['uv_pred'].cpu().numpy(), (input.size(2), input.size(3)))
+                uv_pred = out['uv_pred']
+                if uv_pred.ndim == 4:
+                    uv_point_pred, uv_pred_conf = map2uv(uv_pred.cpu().numpy(), (input.size(2), input.size(3)))
+                else:
+                    uv_point_pred, uv_pred_conf = (uv_pred * args.size).cpu().numpy(), [None,]
                 vertex, align_state = registration(vertex, uv_point_pred[0], self.j_regressor, K, args.size, uv_conf=uv_pred_conf[0], poly=poly)
 
                 vertex2xyz = mano_to_mpii(np.matmul(self.j_regressor, vertex))

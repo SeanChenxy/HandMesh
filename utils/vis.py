@@ -60,6 +60,8 @@ def registration(vertex, uv, j_regressor, K, size, uv_conf=None, poly=None):
     if vertex2xyz.shape[0] == 21:
         vertex2xyz = mano_to_mpii(vertex2xyz)
     try_poly = True
+    if uv_conf is None:
+        uv_conf = np.ones([uv.shape[0], 1])
     uv_select = uv_conf > 0.1
     if uv_select.sum() == 0:
         success = False
