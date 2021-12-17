@@ -49,7 +49,6 @@ class FreiHAND(data.Dataset):
             raise Exception('phase error')
 
     def get_training_sample(self, idx):
-        print(idx)
         img = read_img_abs(idx, self.root, 'training')
         mask = read_msk(idx % self.one_version_len, self.root, 'training')
         K, mano, xyz = self.db_data_anno[idx]
