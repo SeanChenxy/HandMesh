@@ -1,3 +1,9 @@
+# ------------------------------------------------------------------------------
+# Copyright (c) 2021
+# Licensed under the MIT License.
+# Written by Xingyu Chen(chenxingyusean@foxmail.com)
+# ------------------------------------------------------------------------------
+
 import torch.nn as nn
 import torch
 from mobrecon.network import DWReg2DDecode3D, conv_layer, linear_layer, DenseStack, DenseStack2, mobile_unit, Reorg
@@ -36,6 +42,9 @@ class Backbone(nn.Module):
 
 
 class MobRecon(nn.Module):
+    """
+        https://arxiv.org/pdf/2112.02753.pdf
+    """
     def __init__(self, args, spiral_indices, up_transform):
         super(MobRecon, self).__init__()
 

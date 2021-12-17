@@ -38,7 +38,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 ## Run a demo
 + Prepare pre-trained models as
   ```
-  out/Human36M/cmr_g/checkpoints/cmr_g_res18_human36m.pt
+  out/Human36M/cmr_g/checkpoints/cmr_pg_res18_human36m.pt
   out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
   out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
   out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
