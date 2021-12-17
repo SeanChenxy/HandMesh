@@ -49,6 +49,7 @@ class FreiHAND(data.Dataset):
             raise Exception('phase error')
 
     def get_training_sample(self, idx):
+        print(idx)
         img = read_img_abs(idx, self.root, 'training')
         mask = read_msk(idx % self.one_version_len, self.root, 'training')
         K, mano, xyz = self.db_data_anno[idx]
@@ -188,10 +189,8 @@ if __name__ == '__main__':
 
     args.phase = 'training'
     args.size = 224
+    args.work_dir = os.path.join( os.path.dirname(os.path.realpath(__file__)), '../..' )
     dataset = FreiHAND('../../data/FreiHAND', args.phase, args, tmp['face'], writer=None,
-                       down_sample_list=down_transform_list, img_mean=args.img_mean, img_std=args.img_std, ms=args.ms_mesh)
+                       down_sample_list=down_transform_list, ms=args.ms_mesh)
     for i in range(len(dataset)):
         data = dataset.get_training_sample(i)
-        cv2.imshow('test', inv_base_tranmsform(data['img'].numpy())[:, :, ::-1])
-        cv2.waitKey(0)
-
