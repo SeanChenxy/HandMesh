@@ -6,7 +6,7 @@
 This repo is the PyTorch implementation of hand mesh reconstruction described in [CMR](https://arxiv.org/abs/2103.02845) and [MobRecon](https://arxiv.org/abs/2112.02753).
 
 ## Update
-+ 2021-12.7, Add MobRecon demo.
++ 2021-12-7, Add MobRecon demo.
 + 2021-6-10, Add Human3.6M dataset.
 + 2021-5-20, Add CMR-G model.
 
@@ -17,7 +17,8 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 - [x] DenseStack for 2D encoding
 - [x] Feature lifting with MapReg and PVL
 - [x] DSConv as an efficient mesh operator
-- [ ] MobRecon training with consistency learning and complement data
+- [ ] Complement data will be available [here](complement_data.md)
+- [ ] MobRecon training with consistency learning
 
 ## Install 
 + Environment
