@@ -1,10 +1,13 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os.path as osp
 import torch
 import torch.backends.cudnn as cudnn
-from cmr.cmr_sg import CMR_SG
-from cmr.cmr_pg import CMR_PG
-from cmr.cmr_g import CMR_G
-from mobrecon.mobrecon_densestack import MobRecon
+from cmr.models.cmr_sg import CMR_SG
+from cmr.models.cmr_pg import CMR_PG
+from cmr.models.cmr_g import CMR_G
+from cmr.models.mobrecon_densestack import MobRecon
 from utils.read import spiral_tramsform
 from utils import utils, writer
 from options.base_options import BaseOptions
@@ -21,7 +24,7 @@ if __name__ == '__main__':
 
     # dir prepare
     args.work_dir = osp.dirname(osp.realpath(__file__))
-    data_fp = osp.join(args.work_dir, 'data', args.dataset)
+    data_fp = osp.join(args.work_dir, '../data', args.dataset)
     args.out_dir = osp.join(args.work_dir, 'out', args.dataset, args.exp_name)
     args.checkpoints_dir = osp.join(args.out_dir, 'checkpoints')
     if args.phase in ['eval', 'demo']:
@@ -43,11 +46,11 @@ if __name__ == '__main__':
     cudnn.deterministic = True
 
     if args.dataset=='Human36M':
-        template_fp = osp.join(args.work_dir, 'template', 'template_body.ply')
-        transform_fp = osp.join(args.work_dir, 'template', 'transform_body.pkl')
+        template_fp = osp.join(args.work_dir, '../template/template_body.ply')
+        transform_fp = osp.join(args.work_dir, '../template/transform_body.pkl')
     else:
-        template_fp = osp.join(args.work_dir, 'template', 'template.ply')
-        transform_fp = osp.join(args.work_dir, 'template', 'transform.pkl')
+        template_fp = osp.join(args.work_dir, '../template/template.ply')
+        transform_fp = osp.join(args.work_dir, '../template/transform.pkl')
     spiral_indices_list, down_transform_list, up_transform_list, tmp = spiral_tramsform(transform_fp, template_fp, args.ds_factors, args.seq_length, args.dilation)
 
     # model
@@ -90,12 +93,12 @@ if __name__ == '__main__':
             eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'])
             eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
             train_dataset = FreiHAND(data_fp, 'training', args, tmp['face'], writer=writer, down_sample_list=down_transform_list, ms=args.ms_mesh)
-            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=16, drop_last=True)
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=0, drop_last=True)
         elif args.dataset=='Human36M':
             eval_dataset = Human36M(data_fp, 'test', args, down_transform_list, tmp['face'])
             eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
             train_dataset = Human36M(data_fp, 'train', args, down_transform_list, tmp['face'])
-            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=16, drop_last=True)
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=0, drop_last=True)
         else:
             raise Exception('Dataset not support')
         # optimize

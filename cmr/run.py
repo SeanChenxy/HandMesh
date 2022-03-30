@@ -54,7 +54,7 @@ class Runner(object):
             self.board = None
     
     def set_demo(self, args):
-        with open(os.path.join(args.work_dir, 'template', 'MANO_RIGHT.pkl'), 'rb') as f:
+        with open(os.path.join(args.work_dir, '../template/MANO_RIGHT.pkl'), 'rb') as f:
             mano = pickle.load(f, encoding='latin1')
         self.j_regressor = np.zeros([21, 778])
         self.j_regressor[:16] = mano['J_regressor'].toarray()
@@ -193,9 +193,9 @@ class Runner(object):
                 vertex2xyz = mano_to_mpii(np.matmul(self.j_regressor, vertex))
                 xyz_pred_list.append(vertex2xyz)
                 verts_pred_list.append(vertex)
-                # if args.phase == 'eval':
-                #     save_a_image_with_mesh_joints(inv_base_tranmsform(data['img'][0].cpu().numpy())[:, :, ::-1], mask_pred, poly, data['K'][0].cpu().numpy(), vertex, self.faces[0], uv_point_pred[0], vertex2xyz,
-                #                               os. path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
+                if args.phase == 'eval':
+                    save_a_image_with_mesh_joints(inv_base_tranmsform(data['img'][0].cpu().numpy())[:, :, ::-1], mask_pred, poly, data['K'][0].cpu().numpy(), vertex, self.faces[0], uv_point_pred[0], vertex2xyz,
+                                              os. path.join(args.out_dir, 'eval', str(step) + '_plot.jpg'))
                 bar.suffix = '({batch}/{size})' .format(batch=step+1, size=len(self.eval_loader))
                 bar.next()
         bar.finish()

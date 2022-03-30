@@ -3,7 +3,7 @@ exp_name='mobrecon'
 backbone='ResNet18'
 dataset='FreiHAND'
 model='mobrecon'
-python main.py \
+python cmr/main.py \
     --phase $phase \
     --exp_name $exp_name \
     --dataset $dataset \

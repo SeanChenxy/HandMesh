@@ -34,6 +34,11 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
++ Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
+  ```
+  ln -s /path/to/mano_v1_2/MANO_RIGHT.pkl template/MANO_RIGHT.pkl
+  ```
+
 + Download the files you need from [Google drive](https://drive.google.com/drive/folders/1MIE0Jo01blG6RWo2trQbXlQ92tMOaLx_?usp=sharing).
 
 ## Run a demo
@@ -92,6 +97,7 @@ ${ROOT}
 |   |   |-- images
 |   |   |-- mask
 |   |   |-- annotations
+|   |   |-- J_regressor_h36m_correct.npy
 ```  
 
 ## Evaluation

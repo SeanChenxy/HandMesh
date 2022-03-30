@@ -6,7 +6,7 @@
 
 import torch.nn as nn
 import torch
-from mobrecon.network import DWReg2DDecode3D, conv_layer, linear_layer, DenseStack, DenseStack2, mobile_unit, Reorg
+from cmr.models.network_mobrecon import DWReg2DDecode3D, conv_layer, linear_layer, DenseStack, DenseStack2, mobile_unit, Reorg
 
 
 class Backbone(nn.Module):

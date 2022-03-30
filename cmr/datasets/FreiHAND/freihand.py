@@ -5,7 +5,7 @@ from utils.vis import base_transform, inv_base_tranmsform, cnt_area, uv2map
 from termcolor import cprint
 from utils.vis import crop_roi
 from utils.augmentation import Augmentation, crop_roi, rotate, get_m1to1_gaussian_rand
-from cmr.network import Pool
+from cmr.models.network import Pool
 import pickle
 import cv2
 import os
@@ -27,7 +27,7 @@ class FreiHAND(data.Dataset):
         self.rot_aug = args.rot_aug if 'train' in self.phase else 0
         assert 0 <= self.rot_aug <= 180, 'rotaion limit must be in [0, 180]'
         self.color_aug = Augmentation(size=self.size) if args.color_aug and 'train' in self.phase else None
-        with open(os.path.join(args.work_dir, 'template', 'MANO_RIGHT.pkl'), 'rb') as f:
+        with open(os.path.join(args.work_dir, '../template/MANO_RIGHT.pkl'), 'rb') as f:
             mano = pickle.load(f, encoding='latin1')
         self.j_regressor = np.zeros([21, 778])
         self.j_regressor[:16] = mano['J_regressor'].toarray()

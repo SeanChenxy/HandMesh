@@ -1,13 +1,12 @@
-phase='demo'
-exp_name='cmr_pg'
+phase='train'
+exp_name='cmr_g_freihand'
 backbone='ResNet18'
 dataset='FreiHAND'
-model='cmr_pg'
-python main.py \
+model='cmr_g'
+python cmr/main.py \
     --phase $phase \
     --exp_name $exp_name \
     --dataset $dataset \
     --model $model \
     --backbone $backbone \
-    --device_idx -1 \
-    --resume 'cmr_pg_res18_freihand.pt'
+    --device_idx 0

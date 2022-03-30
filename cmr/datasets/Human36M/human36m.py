@@ -18,7 +18,7 @@ from utils.vis import base_transform, inv_base_tranmsform, uv2map
 from utils.read import save_obj, save_mesh
 from utils.read import read_mesh as read_mesh_
 from utils.fh_utils import projectPoints, plot_hand
-from cmr.network import Pool
+from cmr.models.network import Pool
 from utils.augmentation import Augmentation
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
