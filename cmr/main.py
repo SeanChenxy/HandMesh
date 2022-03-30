@@ -93,12 +93,12 @@ if __name__ == '__main__':
             eval_dataset = FreiHAND(data_fp, 'evaluation', args, tmp['face'])
             eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
             train_dataset = FreiHAND(data_fp, 'training', args, tmp['face'], writer=writer, down_sample_list=down_transform_list, ms=args.ms_mesh)
-            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=0, drop_last=True)
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=8, drop_last=True)
         elif args.dataset=='Human36M':
             eval_dataset = Human36M(data_fp, 'test', args, down_transform_list, tmp['face'])
             eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=0)
             train_dataset = Human36M(data_fp, 'train', args, down_transform_list, tmp['face'])
-            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=0, drop_last=True)
+            train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=False, num_workers=8, drop_last=True)
         else:
             raise Exception('Dataset not support')
         # optimize
