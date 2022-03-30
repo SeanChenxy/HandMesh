@@ -60,7 +60,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 +  Explaination of the output
 
     <p align="middle">  
-    <img src="./images/2299_plot.jpg">  
+    <img src="./cmr/images/2299_plot.jpg">  
     </p> 
 
     + In an JPEG file (e.g., 000_plot.jpg), we show silhouette, 2D pose, projection of mesh, camera-space mesh and pose
