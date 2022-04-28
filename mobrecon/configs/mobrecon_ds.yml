@@ -1,0 +1,27 @@
+VERSION: 0.1
+PHASE: 'train'
+MODEL:
+  NAME: MobRecon_DS
+  SPIRAL:
+    TYPE: 'DSConv'
+  # RESUME: checkpoint_last.pt
+DATA:
+  CONTRASTIVE: True
+  FREIHAND:
+    USE: True
+    ROOT: 'data/FreiHAND'
+  COMPHAND:
+    USE: True
+    ROOT: 'data/CompHand'
+TRAIN:
+  DATASET: 'FreiHAND'
+  EPOCHS: 38
+  BATCH_SIZE: 32
+  LR: 0.001
+  GPU_ID: 0,
+VAL:
+  DATASET: 'Ge'
+  BATCH_SIZE: 1
+TEST:
+  DATASET: 'FreiHAND'
+  SAVE_PRED: False

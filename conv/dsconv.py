@@ -11,9 +11,12 @@ class DSConv(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.seq_length = indices.size(1)
-
         self.spatial_layer = nn.Conv2d(self.in_channels, self.in_channels, int(np.sqrt(self.seq_length)), 1, 0, groups=self.in_channels, bias=False)
         self.channel_layer = nn.Linear(self.in_channels, self.out_channels, bias=False)
+        torch.nn.init.xavier_uniform_(self.channel_layer.weight)
+
+    def reset_parameters(self):
+        torch.nn.init.xavier_uniform_(self.spatial_layer.weight)
         torch.nn.init.xavier_uniform_(self.channel_layer.weight)
 
     def forward(self, x):
@@ -26,3 +29,9 @@ class DSConv(nn.Module):
         x = self.channel_layer(x)
 
         return x
+
+    def __repr__(self):
+        return '{}({}, {}, seq_length={})'.format(self.__class__.__name__,
+                                                  self.in_channels,
+                                                  self.out_channels,
+                                                  self.seq_length)

@@ -140,15 +140,15 @@ def db_size(set_name):
 
 
 def load_db_annotation(base_path, writer=None, set_name=None):
-    if set_name == 'training':
+    if set_name in ['training', 'train']:
         if writer is not None:
             writer.print_str('Loading FreiHAND training set index ...')
         t = time.time()
-        k_path = os.path.join(base_path, '%s_K.json' % set_name)
+        k_path = os.path.join(base_path, '%s_K.json' % 'training')
 
         # assumed paths to data containers
-        mano_path = os.path.join(base_path, '%s_mano.json' % set_name)
-        xyz_path = os.path.join(base_path, '%s_xyz.json' % set_name)
+        mano_path = os.path.join(base_path, '%s_mano.json' % 'training')
+        xyz_path = os.path.join(base_path, '%s_xyz.json' % 'training')
 
         # load if exist
         K_list = json_load(k_path)
@@ -161,12 +161,12 @@ def load_db_annotation(base_path, writer=None, set_name=None):
         if writer is not None:
             writer.print_str('Loading of %d %s samples done in %.2f seconds' % (len(K_list), set_name, time.time()-t))
         return zip(K_list, mano_list, xyz_list)
-    elif set_name == 'evaluation':
+    elif set_name in ['evaluation', 'eval', 'val', 'test']:
         if writer is not None:
             writer.print_str('Loading FreiHAND eval set index ...')
         t = time.time()
-        k_path = os.path.join(base_path, '%s_K.json' % set_name)
-        scale_path = os.path.join(base_path, '%s_scale.json' % set_name)
+        k_path = os.path.join(base_path, '%s_K.json' % 'evaluation')
+        scale_path = os.path.join(base_path, '%s_scale.json' % 'evaluation')
         K_list = json_load(k_path)
         scale_list = json_load(scale_path)
 
@@ -175,7 +175,7 @@ def load_db_annotation(base_path, writer=None, set_name=None):
             writer.print_str('Loading of %d eval samples done in %.2f seconds' % (len(K_list), time.time() - t))
         return zip(K_list, scale_list)
     else:
-        raise Exception('set_name error')
+        raise Exception('set_name error: ' + set_name)
 
 
 class sample_version:
@@ -231,6 +231,13 @@ def read_msk(idx, base_path, set_name):
                              '%08d.jpg' % idx)
     _assert_exist(mask_path)
     return (io.imread(mask_path)[:, :, 0] > 240).astype(np.uint8)
+
+
+def read_mask_woclip(idx, base_path, set_name):
+    mask_path = os.path.join(base_path, set_name, 'mask',
+                             '%08d.jpg' % idx)
+    _assert_exist(mask_path)
+    return io.imread(mask_path)[:, :, 0]
 
 
 def read_mesh(idx, base_path):

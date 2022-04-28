@@ -7,7 +7,7 @@
 from __future__ import unicode_literals, print_function
 import numpy as np
 import cv2
-from datasets.FreiHAND.kinematics import  mano_to_mpii
+from cmr.datasets.FreiHAND.kinematics import mano_to_mpii
 from scipy.optimize import minimize
 
 

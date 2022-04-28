@@ -92,15 +92,30 @@ def get_aug_config(exclude_flip, base_scale=1.1, scale_factor=0.25, rot_factor=6
     return scale, rot, shift, color_scale, do_flip
 
 
-def augmentation(img, bbox, data_split, exclude_flip=False, input_img_shape=(256, 256), mask=None, base_scale=1.1, scale_factor=0.25, rot_factor=60, shift_wh=None, gaussian_std=1):
+def augmentation(img, bbox, data_split, exclude_flip=False, input_img_shape=(256, 256), mask=None, base_scale=1.1, scale_factor=0.25, rot_factor=60, shift_wh=None, gaussian_std=1, color_aug=False):
     if data_split == 'train':
         scale, rot, shift, color_scale, do_flip = get_aug_config(exclude_flip, base_scale=base_scale, scale_factor=scale_factor, rot_factor=rot_factor, gaussian_std=gaussian_std)
     else:
-        scale, rot, shift, color_scale, do_flip = 1.1, 0.0, [0, 0], np.array([1, 1, 1]), False
+        scale, rot, shift, color_scale, do_flip = base_scale, 0.0, [0, 0], np.array([1, 1, 1]), False
 
-    img, trans, inv_trans, mask = generate_patch_image(img, bbox, scale, rot, shift, do_flip, input_img_shape, shift_wh=shift_wh, mask=mask)
-    # img = np.clip(img * color_scale[None, None, :], 0, 255)
-    return img, trans, inv_trans, rot, do_flip, input_img_shape[0]/(bbox[2]*scale), mask
+    img, trans, inv_trans, mask, shift_xy = generate_patch_image(img, bbox, scale, rot, shift, do_flip, input_img_shape, shift_wh=shift_wh, mask=mask)
+    if color_aug:
+        img = np.clip(img * color_scale[None, None, :], 0, 255)
+    return img, trans, inv_trans, np.array([rot, scale, *shift_xy]), do_flip, input_img_shape[0]/(bbox[3]*scale), mask
+
+
+def augmentation_2d(img, joint_img, princpt, trans, do_flip):
+    joint_img = joint_img.copy()
+    joint_num = len(joint_img)
+    original_img_shape = img.shape
+
+    if do_flip:
+        joint_img[:, 0] = original_img_shape[1] - joint_img[:, 0] - 1
+        princpt[0] = original_img_shape[1] - princpt[0] - 1
+    for i in range(joint_num):
+        joint_img[i,:2] = trans_point2d(joint_img[i,:2], trans)
+    princpt = trans_point2d(princpt, trans)
+    return joint_img, princpt
 
 
 def generate_patch_image(cvimg, bbox, scale, rot, shift, do_flip, out_shape, shift_wh=None, mask=None):
@@ -118,15 +133,15 @@ def generate_patch_image(cvimg, bbox, scale, rot, shift, do_flip, out_shape, shi
         if mask is not None:
             mask = mask[:, ::-1]
 
-    trans = gen_trans_from_patch_cv(bb_c_x, bb_c_y, bb_width, bb_height, out_shape[1], out_shape[0], scale, rot, shift, shift_wh=shift_wh)
+    trans, shift_xy = gen_trans_from_patch_cv(bb_c_x, bb_c_y, bb_width, bb_height, out_shape[1], out_shape[0], scale, rot, shift, shift_wh=shift_wh, return_shift=True)
     img_patch = cv2.warpAffine(img, trans, (int(out_shape[1]), int(out_shape[0])), flags=cv2.INTER_LINEAR)
     img_patch = img_patch.astype(np.float32)
     if mask is not None:
         mask = cv2.warpAffine(mask, trans, (int(out_shape[1]), int(out_shape[0])), flags=cv2.INTER_LINEAR)
         mask = (mask > 150).astype(np.uint8)
-    inv_trans = gen_trans_from_patch_cv(bb_c_x, bb_c_y, bb_width, bb_height, out_shape[1], out_shape[0], scale, rot, shift, inv=True)
+    inv_trans = gen_trans_from_patch_cv(bb_c_x, bb_c_y, bb_width, bb_height, out_shape[1], out_shape[0], scale, rot, shift, shift_wh=shift_wh, inv=True)
 
-    return img_patch, trans, inv_trans, mask
+    return img_patch, trans, inv_trans, mask, shift_xy
 
 
 def rotate_2d(pt_2d, rot_rad):
@@ -138,12 +153,12 @@ def rotate_2d(pt_2d, rot_rad):
     return np.array([xx, yy], dtype=np.float32)
 
 
-def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_height, scale, rot, shift, shift_wh=None, inv=False):
+def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_height, scale, rot, shift, shift_wh=None, inv=False, return_shift=False):
     # augment size with scale
     src_w = src_width * scale
     src_h = src_height * scale
     if shift_wh is not None:
-        shift_lim = ((src_w - shift_wh[0]) / 2, (src_h - shift_wh[1]) / 2)
+        shift_lim = (max((src_w - shift_wh[0]) / 2, 0), max((src_h - shift_wh[1]) / 2, 0))
         x_shift = shift[0] * shift_lim[0]
         y_shift = shift[1] * shift_lim[1]
     else:
@@ -177,4 +192,12 @@ def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_heig
         trans = cv2.getAffineTransform(np.float32(src), np.float32(dst))
 
     trans = trans.astype(np.float32)
+    if return_shift:
+        return trans, [x_shift/src_w, y_shift/src_h]
     return trans
+
+
+def trans_point2d(pt_2d, trans):
+    src_pt = np.array([pt_2d[0], pt_2d[1], 1.]).T
+    dst_pt = np.dot(trans, src_pt)
+    return dst_pt[0:2]

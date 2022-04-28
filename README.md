@@ -6,9 +6,10 @@
 This repo is the PyTorch implementation of hand mesh reconstruction described in [CMR](https://arxiv.org/abs/2103.02845) and [MobRecon](https://arxiv.org/abs/2112.02753).
 
 ## Update
-+ 2021-12-7, Add MobRecon demo.
-+ 2021-6-10, Add Human3.6M dataset.
-+ 2021-5-20, Add CMR-G model.
++ 2022-4-28. Wrap old code in `cmr`, including CMR demo/training/evaluation and Mobrecon demo/evaluation. Add `mobrecon` to release MobRecon training.
++ 2021-12-7. Add MobRecon demo.
++ 2021-6-10. Add Human3.6M dataset.
++ 2021-5-20. Add CMR-G model.
 
 ## Features
 - [x] SpiralNet++
@@ -18,7 +19,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 - [x] Feature lifting with MapReg and PVL
 - [x] DSConv as an efficient mesh operator
 - [ ] Complement data will be available [here](complement_data.md)
-- [ ] MobRecon training with consistency learning
+- [x] MobRecon training with consistency learning
 
 ## Install 
 + Environment
@@ -34,11 +35,10 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
-+ Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
++ Here, you should accept [MANO LICENCE](https://mano.is.tue.mpg.de/license.html). Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
   ```
   ln -s /path/to/mano_v1_2/MANO_RIGHT.pkl template/MANO_RIGHT.pkl
   ```
-
 + Download the files you need from [Google drive](https://drive.google.com/drive/folders/1MIE0Jo01blG6RWo2trQbXlQ92tMOaLx_?usp=sharing).
 
 ## Run a demo
@@ -52,8 +52,8 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   ``` 
 + Run
   ```
-  ./scripts/demo_cmr.sh
-  ./scripts/demo_mobrecon.sh
+  ./cmr/scripts/demo_cmr.sh
+  ./cmr/scripts/demo_mobrecon.sh
   ```
   The prediction results will be saved in output directory, e.g., `out/FreiHAND/mobrecon/demo`.
 
@@ -77,6 +77,9 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 #### Human3.6M
 + The official data is now not avaliable. Please follow [I2L repo](https://github.com/mks0601/I2L-MeshNet_RELEASE) to download it.
 + Download silhouette GT file `h36m_mask.zip`, and unzip it under `data/Human36M`.
+#### Real World Testset
++ Please download the dataset from [this link](https://github.com/3d-hand-shape/hand-graph-cnn/tree/master/data/real_world_testset), and create a soft link in `data`, i.e., `data/Ge`.
+
 #### Data dir
 ```  
 ${ROOT}  
@@ -98,19 +101,23 @@ ${ROOT}
 |   |   |-- mask
 |   |   |-- annotations
 |   |   |-- J_regressor_h36m_correct.npy
+|   |-- Ge
+|   |   |-- images
+|   |   |-- params.mat
+|   |   |-- pose_gt.mat
 ```  
 
 ## Evaluation
 #### FreiHAND
 ```
-./scripts/eval_cmr_freihand.sh
-./scripts/eval_mobrecon_freihand.sh
+./cmr/scripts/eval_cmr_freihand.sh
+./cmr/scripts/eval_mobrecon_freihand.sh
 ```
 + JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 
 #### Human3.6M
 ```
-./scripts/eval_cmr_human36m.sh
+./cmr/scripts/eval_cmr_human36m.sh
 ```
 #### Performance on PA-MPJPE (mm)
 We re-produce the following results after code re-organization.
@@ -124,8 +131,9 @@ We re-produce the following results after code re-organization.
 
 ## Training
 ```
-./scripts/train_cmr_freihand.sh
-./scripts/train_cmr_human36m.sh
+./cmr/scripts/train_cmr_freihand.sh
+./cmr/scripts/train_cmr_human36m.sh
+./mobrecon/scripts/train_mobrecon.sh
 ```
 ## Reference
 ```tex
@@ -135,14 +143,15 @@ We re-produce the following results after code re-organization.
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2021}
 }
-@article{bib:MobRecon,
+@inproceedings{bib:MobRecon,
   title={MobRecon: Mobile-Friendly Hand Mesh Reconstruction from Monocular Image},
   author={Chen, Xingyu and Liu, Yufeng and Dong Yajiao and Zhang, Xiong and Ma, Chongyang and Xiong, Yanmin and Zhang, Yuan and Guo, Xiaoyan},
-  journal={arXiv:2112.02753},
-  year={2021}
-}
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2022}
 }
 ```
 
 ## Acknowledgement
 Our implementation of SpiralConv is based on [spiralnet_plus](https://github.com/sw-gong/spiralnet_plus?utm_source=catalyzex.com).
+
+We also thank [hand-graph-cnn](https://github.com/3d-hand-shape/hand-graph-cnn/tree/master/data), [I2L-MeshNet_RELEASE](https://github.com/mks0601/I2L-MeshNet_RELEASE), [detectron2](https://github.com/facebookresearch/detectron2) for inspiring implementations.
