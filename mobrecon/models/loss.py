@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file loss.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief loss fuctions
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -6,6 +19,17 @@ import torch
 
 
 def l1_loss(pred, gt, is_valid=None, drop_nan=False):
+    """L1 loss
+
+    Args:
+        pred (tensor): prediction
+        gt (tensor): ground truth
+        is_valid (Tensor, optional): valid mask. Defaults to None.
+        drop_nan (bool, optional): drop nan or not. Defaults to False.
+
+    Returns:
+        tensor: l1 loss
+    """
     if drop_nan:
         pred = torch.where(torch.isnan(pred), torch.full_like(pred, 0), pred)
         pred = torch.where(torch.isinf(pred), torch.full_like(pred, 0), pred)
@@ -24,6 +48,16 @@ def l1_loss(pred, gt, is_valid=None, drop_nan=False):
 
 
 def bce_loss(pred, gt, is_valid=None):
+    """Binary cross entropy
+
+    Args:
+        pred (tensor): prediction
+        gt (tensor): ground truth
+        is_valid (Tensor, optional): valid mask. Defaults to None.
+
+    Returns:
+        tensor: bce loss
+    """
     loss = F.binary_cross_entropy(pred, gt, reduction='none')
     if is_valid is not None:
         loss *= is_valid
@@ -35,17 +69,18 @@ def bce_loss(pred, gt, is_valid=None):
     else:
         return loss.mean()
 
-# def bce_loss(pred, gt, is_valid=None):
-#     loss = F.binary_cross_entropy(pred, gt, reduction='none')
-#     if is_valid is not None:
-#         loss *= is_valid
-# valid_idx = [i for i in range(len(is_valid)) if bool(is_valid[i])]
-# loss = loss[valid_idx]
-
-# return loss.mean()
-
 
 def bce_wlog_loss(pred, gt, is_valid=None):
+    """Binary cross entropy with logits
+
+    Args:
+        pred (tensor): prediction
+        gt (tensor): ground truth
+        is_valid (Tensor, optional): valid mask. Defaults to None.
+
+    Returns:
+        tensor: bce loss
+    """
     loss = F.binary_cross_entropy_with_logits(pred, gt, reduction='none')
     if is_valid is not None:
         loss *= is_valid
@@ -58,34 +93,18 @@ def bce_wlog_loss(pred, gt, is_valid=None):
         return loss.mean()
 
 
-def edge_loss(edge, pred, gt):
-    pred_start = pred.index_select(1, edge[0])
-    pred_end = pred.index_select(1, edge[1])
-    gt_start = gt.index_select(1, edge[0])
-    gt_end = gt.index_select(1, edge[1])
-
-    pred_length = torch.sqrt(torch.sum((pred_start - pred_end) ** 2, dim=2))
-    gt_length = torch.sqrt(torch.sum((gt_start - gt_end) ** 2, dim=2))
-    return l1_loss(pred_length, gt_length)
-
-
-def mask_loss(pred, gt, face, K, render):
-    mask = render(pred, face, K=K, mode='silhouettes')
-
-    return F.l1_loss(mask, gt), mask
-
-
-def proj_loss(pred, gt, K, img_size=224):
-    uv_pred = torch.bmm(K, pred.transpose(1, 2)).transpose(1, 2)
-    uv_pred = (uv_pred / uv_pred[:, :, 2:3])[:, :, :2] / img_size
-    uv_gt = torch.bmm(K, gt.transpose(1, 2)).transpose(1, 2)
-    uv_gt = (uv_gt / uv_gt[:, :, 2:3])[:, :, :2] / img_size
-
-    return F.l1_loss(uv_pred.clamp(min=0., max=1.), uv_gt.clamp(min=0., max=1.))
-
-
 def normal_loss(pred, gt, face, is_valid=None):
+    """Loss on nomal dir
 
+    Args:
+        pred (tensor): prediction vertices
+        gt (tensor): ground-truth vertices
+        face (tensor): mesh faces
+        is_valid (tensor, optional): valid mask. Defaults to None.
+
+    Returns:
+        tensor: normal loss
+    """
     v1_out = pred[:, face[:, 1], :] - pred[:, face[:, 0], :]
     v1_out = F.normalize(v1_out, p=2, dim=2)  # L2 normalize to make unit vector
     v2_out = pred[:, face[:, 2], :] - pred[:, face[:, 0], :]
@@ -107,14 +126,22 @@ def normal_loss(pred, gt, face, is_valid=None):
     cos3 = torch.abs(torch.sum(v3_out * normal_gt, 2, keepdim=True)) #* valid_mask
     loss = torch.cat((cos1, cos2, cos3), 1)
     if is_valid is not None:
-        # valid_idx = [i for i in range(len(is_valid)) if bool(is_valid[i])]
-        # loss = loss[valid_idx]
         loss *= is_valid
     return loss.mean()
 
 
 def edge_length_loss(pred, gt, face, is_valid=None):
+    """Loss on mesh edge length
 
+    Args:
+        pred (tensor): prediction vertices
+        gt (tensor): ground-truth vertices
+        face (tensor): mesh faces
+        is_valid (tensor, optional): valid mask. Defaults to None.
+
+    Returns:
+        tensor: edge length loss
+    """
     d1_out = torch.sqrt(torch.sum((pred[:, face[:, 0], :] - pred[:, face[:, 1], :]) ** 2, 2, keepdim=True))
     d2_out = torch.sqrt(torch.sum((pred[:, face[:, 0], :] - pred[:, face[:, 2], :]) ** 2, 2, keepdim=True))
     d3_out = torch.sqrt(torch.sum((pred[:, face[:, 1], :] - pred[:, face[:, 2], :]) ** 2, 2, keepdim=True))
@@ -132,29 +159,20 @@ def edge_length_loss(pred, gt, face, is_valid=None):
     diff3 = torch.abs(d3_out - d3_gt) #* valid_mask_3
     loss = torch.cat((diff1, diff2, diff3), 1)
     if is_valid is not None:
-        # valid_idx = [i for i in range(len(is_valid)) if bool(is_valid[i])]
-        # loss = loss[valid_idx]
         loss *= is_valid
     return loss.mean()
 
 
-def compute_iou(pred, gt):
-    # import cv2
-    # cv2.imshow('test', gt*255)
-    # cv2.waitKey(0)
-    area_pred = pred.sum()
-    area_gt = gt.sum()
-    if area_pred == area_gt == 0:
-        return 1
-    union_area = (pred + gt).clip(max=1)
-    union_area = union_area.sum()
-    inter_area = area_pred + area_gt - union_area
-    IoU = inter_area / union_area
-
-    return IoU
-
-
 def contrastive_loss_3d(verts, aug_param):
+    """Consistency loss in 3D space
+
+    Args:
+        verts (tensor): prediction vertices
+        aug_param (tensor): parameters on data augmentation
+
+    Returns:
+        tensor: consistency loss
+    """
     rot_mat = torch.empty(aug_param.size()[0], 3, 3)
     rot_angle = aug_param[:, 4] - aug_param[:, 0]
     ang_rad = torch.deg2rad(rot_angle)
@@ -168,22 +186,38 @@ def contrastive_loss_3d(verts, aug_param):
 
 
 def contrastive_loss_2d(uv_pred, uv_trans, size):
-    #取出UV坐标
+    """Consistency loss in 2D space
+
+    Args:
+        uv_pred (tensor): prediction 2D landmarks
+        uv_trans (tensor): affine transformation matrix
+        size (int): image shape
+
+    Returns:
+        tensor: consistency loss
+    """
     uv_pred_pre = uv_pred[:, :, :2]
     uv_pred_lat = uv_pred[:, :, 2:]
 
     uv_trans_pre = uv_trans[:, :, :3]
     uv_trans_lat = uv_trans[:, :, 3:]
 
-    # 计算uv reverse坐标
     uv_pred_pre_rev = revtrans_points(uv_pred_pre * size, uv_trans_pre) / size
     uv_pred_lat_rev = revtrans_points(uv_pred_lat * size, uv_trans_lat) / size
 
-    # loss = torch.sqrt(torch.sum(torch.pow(uv_pred_pre_rev - uv_pred_lat_rev, 2), 2))
     return F.l1_loss(uv_pred_pre_rev, uv_pred_lat_rev, reduction='mean')
 
 
 def revtrans_points(uv_point, trans):
+    """Apply an affine transformation on 2D landmarks 
+
+    Args:
+        uv_point (tensor): prediction 2D landmarks
+        trans (tensor): affine transformation matrix
+
+    Returns:
+        tensor: 2D landmarks after transform
+    """
     uv1 = torch.cat((uv_point, torch.ones_like(uv_point[:, :, :1])), 2)
     uv_crop = torch.bmm(trans, uv1.transpose(2, 1)).transpose(2, 1)[:, :, :2]
 

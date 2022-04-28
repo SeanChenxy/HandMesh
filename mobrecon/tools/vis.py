@@ -1,36 +1,31 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file vis.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief some visual computation
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import torch
 import cv2
 import numpy as np
 
 
-def perspective2(points, calibrations, transforms=None):
-    '''
-    Compute the perspective projections of 3D points into the image plane by given projection matrix
-    :param points: [Bx3xN] Tensor of 3D points
-    :param calibrations: [Bx4x4] Tensor of projection matrix
-    :param transforms: [Bx2x3] Tensor of image transform matrix
-    :return: xy: [Bx2xN] Tensor of xy coordinates in the image plane
-    '''
-    rot = calibrations[:, :3, :3]
-    trans = calibrations[:, :3, 3:4]
-    homo = torch.baddbmm(trans, rot, points)  # [B, 3, N]
-    xy = homo[:, :2, :] / homo[:, 2:3, :]
-    if transforms is not None:
-        scale = transforms[:, :2, :2]
-        shift = transforms[:, :2, 2:3]
-        xy = torch.baddbmm(shift, scale, xy)
-
-    xyz = torch.cat([xy, homo[:, 2:3, :]], 1)
-    return xyz
-
-
 def perspective(points, calibrations):
-    '''
-    Compute the perspective projections of 3D points into the image plane by given projection matrix
-    :param points: [Bx3xN] Tensor of 3D points
-    :param calibrations: [Bx4x4] Tensor of projection matrix
-    :return: points_img: [Bx2xN] Tensor of uvz coordinates in the image plane
-    '''
+    """Compute the perspective projections of 3D points into the image plane by given projection matrix
+
+    Args:
+        points (tensot): [Bx3xN] tensor of 3D points
+        calibrations (tensor): [Bx4x4] Tensor of projection matrix
+
+    Returns:
+        tensor: [Bx3xN] Tensor of uvz coordinates in the image plane
+    """
     if points.shape[1] == 2:
         points = torch.cat([points, torch.ones([points.shape[0], 1, points.shape[2]]).to(points.device)], 1)
     z = points[:, 2:3].clone()
@@ -43,12 +38,15 @@ def perspective(points, calibrations):
 
 
 def perspective_np(points, calibrations):
-    '''
-    Compute the perspective projections of 3D points into the image plane by given projection matrix
-    :param points: [BxNx3] Tensor of 3D points
-    :param calibrations: [Bx4x4] Tensor of projection matrix
-    :return: points_img: [BxNx3] Tensor of uvz coordinates in the image plane
-    '''
+    """Compute the perspective projections of 3D points into the image plane by given projection matrix
+
+    Args:
+        points (array): [BxNx3] array of 3D points
+        calibrations (array): [Bx4x4] Tensor of projection matrix
+
+    Returns:
+        array: [BxNx3] Tensor of uvz coordinates in the image plane
+    """
     if points.shape[1] == 2:
         points = np.concatenate([points, np.ones([points.shape[0], 1])], -1)
     z = points[:, 2:3].copy()
@@ -59,8 +57,16 @@ def perspective_np(points, calibrations):
 
     return points_img
 
-
 def compute_iou(pred, gt):
+    """Mask IoU
+
+    Args:
+        pred (array): prediction mask
+        gt (array): ground-truth mask
+
+    Returns:
+        float: IoU
+    """
     area_pred = pred.sum()
     area_gt = gt.sum()
     if area_pred == area_gt == 0:
@@ -74,5 +80,13 @@ def compute_iou(pred, gt):
 
 
 def cnt_area(cnt):
+    """Compute area of a contour
+
+    Args:
+        cnt (array): contour
+
+    Returns:
+        float: area
+    """
     area = cv2.contourArea(cnt)
     return area

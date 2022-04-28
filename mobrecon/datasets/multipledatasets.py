@@ -5,10 +5,9 @@ import random
 import numpy as np
 from torch.utils.data.dataset import Dataset
 from termcolor import cprint
-from mobhand.datasets.comphand import CompHand
-from mobhand.datasets.freihand import FreiHAND
-from mobhand.datasets.htmlrender import HTMLRender
-from mobhand.build import DATA_REGISTRY
+from mobrecon.datasets.comphand import CompHand
+from mobrecon.datasets.freihand import FreiHAND
+from mobrecon.build import DATA_REGISTRY
 
 
 @DATA_REGISTRY.register()
@@ -20,8 +19,6 @@ class MultipleDatasets(Dataset):
             self.dbs.append( FreiHAND(self.cfg, phase, writer) )
         if self.cfg.DATA.COMPHAND.USE:
             self.dbs.append( CompHand(self.cfg, phase, writer) )
-        if self.cfg.DATA.HTMLRENDER.USE:
-            self.dbs.append( HTMLRender(self.cfg, phase, writer) )
         self.db_num = len(self.dbs)
         self.max_db_data_num = max([len(db) for db in self.dbs])
         self.db_len_cumsum = np.cumsum([len(db) for db in self.dbs])
@@ -58,15 +55,17 @@ class MultipleDatasets(Dataset):
         return self.dbs[db_idx][data_idx]
 
 if __name__ == '__main__':
+    """Test the dataset
+    """
     from mobhand.main import setup
     from options.cfg_options import CFGOptions
 
     args = CFGOptions().parse()
-    args.config_file = 'mobhand/configs/mobrecon_ds.yml'
+    args.config_file = 'mobrecon/configs/mobrecon_ds.yml'
     cfg = setup(args)
 
     dataset = MultipleDatasets(cfg)
 
-    for i in range(0, len(dataset), len(dataset) // 100):
+    for i in range(0, len(dataset), len(dataset) // 10):
         print(i)
         data = dataset.__getitem__(i)

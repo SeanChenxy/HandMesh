@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file modules.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief Modules composing MobRecon
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import torch.nn as nn
 import torch
 from conv.spiralconv import SpiralConv
@@ -9,6 +22,8 @@ class Reorg(nn.Module):
     dump_patches = True
 
     def __init__(self):
+        """Reorg layer to re-organize spatial dim and channel dim
+        """
         super(Reorg, self).__init__()
 
     def forward(self, x):
@@ -19,6 +34,23 @@ class Reorg(nn.Module):
 
 
 def conv_layer(channel_in, channel_out, ks=1, stride=1, padding=0, dilation=1, bias=False, bn=True, relu=True, group=1):
+    """Conv block
+
+    Args:
+        channel_in (int): input channel size
+        channel_out (int): output channel size
+        ks (int, optional): kernel size. Defaults to 1.
+        stride (int, optional): Defaults to 1.
+        padding (int, optional): Defaults to 0.
+        dilation (int, optional): Defaults to 1.
+        bias (bool, optional): Defaults to False.
+        bn (bool, optional): Defaults to True.
+        relu (bool, optional): Defaults to True.
+        group (int, optional): group conv parameter. Defaults to 1.
+
+    Returns:
+        Sequential: a block with bn and relu
+    """
     _conv = nn.Conv2d
     sequence = [_conv(channel_in, channel_out, kernel_size=ks, stride=stride, padding=padding, dilation=dilation,
                       bias=bias, groups=group)]
@@ -31,6 +63,18 @@ def conv_layer(channel_in, channel_out, ks=1, stride=1, padding=0, dilation=1, b
 
 
 def linear_layer(channel_in, channel_out, bias=False, bn=True, relu=True):
+    """Fully connected block
+
+    Args:
+        channel_in (int): input channel size
+        channel_out (_type_): output channel size
+        bias (bool, optional): Defaults to False.
+        bn (bool, optional): Defaults to True.
+        relu (bool, optional): Defaults to True.
+
+    Returns:
+        Sequential: a block with bn and relu
+    """
     _linear = nn.Linear
     sequence = [_linear(channel_in, channel_out, bias=bias)]
 
@@ -46,7 +90,15 @@ class mobile_unit(nn.Module):
     dump_patches = True
 
     def __init__(self, channel_in, channel_out, stride=1, has_half_out=False, num3x3=1):
-        # print('unit of mobile net block')
+        """Init a depth-wise sparable convolution
+
+        Args:
+            channel_in (int): input channel size
+            channel_out (_type_): output channel size
+            stride (int, optional): conv stride. Defaults to 1.
+            has_half_out (bool, optional): whether output intermediate result. Defaults to False.
+            num3x3 (int, optional): amount of 3x3 conv layer. Defaults to 1.
+        """
         super(mobile_unit, self).__init__()
         self.stride = stride
         self.channel_in = channel_in
@@ -75,10 +127,19 @@ class mobile_unit(nn.Module):
 
 
 def Pool(x, trans, dim=1):
+    """Upsample a mesh
+
+    Args:
+        x (tensor): input tensor, BxNxD
+        trans (tuple): upsample indices and valus
+        dim (int, optional): upsample axis. Defaults to 1.
+
+    Returns:
+        tensor: upsampled tensor, BxN'xD
+    """
     row, col, value = trans[0].to(x.device), trans[1].to(x.device), trans[2].to(x.device)
     value = value.unsqueeze(-1)
     out = torch.index_select(x, dim, col) * value
-    # out1 = scatter_add(out, row, dim, dim_size=row.size(0)//3)
     out2 = torch.zeros(x.size(0), row.size(0)//3, x.size(-1)).to(x.device)
     idx = row.unsqueeze(0).unsqueeze(-1).expand_as(out)
     out2 = torch.scatter_add(out2, dim, idx, out)
@@ -87,6 +148,14 @@ def Pool(x, trans, dim=1):
 
 class SpiralDeblock(nn.Module):
     def __init__(self, in_channels, out_channels, indices, meshconv=SpiralConv):
+        """Init a spiral conv block
+
+        Args:
+            in_channels (int): input feature dim
+            out_channels (int): output feature dim
+            indices (tensor): neighbourhood of each hand vertex
+            meshconv (optional): conv method, supporting SpiralConv, DSConv. Defaults to SpiralConv.
+        """
         super(SpiralDeblock, self).__init__()
         self.conv = meshconv(in_channels, out_channels, indices)
         self.relu = nn.ReLU(inplace=False)
@@ -103,6 +172,16 @@ class SpiralDeblock(nn.Module):
 # Advanced modules
 class Reg2DDecode3D(nn.Module):
     def __init__(self, latent_size, out_channels, spiral_indices, up_transform, uv_channel, meshconv=SpiralConv):
+        """Init a 3D decoding with sprial convolution
+
+        Args:
+            latent_size (int): feature dim of backbone feature
+            out_channels (list): feature dim of each spiral layer
+            spiral_indices (list): neighbourhood of each hand vertex
+            up_transform (list): upsampling matrix of each hand mesh level
+            uv_channel (int): amount of 2D landmark 
+            meshconv (optional): conv method, supporting SpiralConv, DSConv. Defaults to SpiralConv.
+        """
         super(Reg2DDecode3D, self).__init__()
         self.latent_size = latent_size
         self.out_channels = out_channels

@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file densestack.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief DenseStack
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import torch
 import torch.nn as nn
 from mobrecon.models.modules import conv_layer, mobile_unit, linear_layer, Reorg
@@ -192,6 +205,15 @@ class DenseStack2(nn.Module):
 
 class DenseStack_Backnone(nn.Module):
     def __init__(self, input_channel=128, out_channel=24, latent_size=256, kpts_num=21, pretrain=True):
+        """Init a DenseStack
+
+        Args:
+            input_channel (int, optional): the first-layer channel size. Defaults to 128.
+            out_channel (int, optional): output channel size. Defaults to 24.
+            latent_size (int, optional): middle-feature channel size. Defaults to 256.
+            kpts_num (int, optional): amount of 2D landmark. Defaults to 21.
+            pretrain (bool, optional): use pretrain weight or not. Defaults to True.
+        """
         super(DenseStack_Backnone, self).__init__()
         self.pre_layer = nn.Sequential(conv_layer(3, input_channel // 2, 3, 2, 1),
                                        mobile_unit(input_channel // 2, input_channel))

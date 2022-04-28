@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file mobrecon_ds.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief MobRecon model 
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -15,6 +28,11 @@ from mobrecon.build import MODEL_REGISTRY
 @MODEL_REGISTRY.register()
 class MobRecon_DS(nn.Module):
     def __init__(self, cfg):
+        """Init a MobRecon-DenseStack model
+
+        Args:
+            cfg : config file
+        """
         super(MobRecon_DS, self).__init__()
         self.cfg = cfg
         self.backbone = DenseStack_Backnone(latent_size=cfg.MODEL.LATENT_SIZE,
@@ -83,6 +101,8 @@ class MobRecon_DS(nn.Module):
 
 
 if __name__ == '__main__':
+    """Test the model
+    """
     from mobrecon.main import setup
     from options.cfg_options import CFGOptions
     args = CFGOptions().parse()

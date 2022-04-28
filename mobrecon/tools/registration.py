@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file registration.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief mesh registration with adaptive 2D-1D method
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import numpy as np
 from mobrecon.tools.kinematics import mano_to_mpii
 from mobrecon.tools.vis import perspective_np
@@ -5,16 +18,19 @@ from scipy.optimize import minimize
 
 
 def registration(vertex, uv, j_regressor, calib, size, uv_conf=None, poly=None):
-    """
-    Adaptive 2D-1D registration
-    :param vertex: 3D mesh xyz
-    :param uv: 2D pose
-    :param j_regressor: matrix for vertex -> joint
-    :param K: camera parameters
-    :param size: image size
-    :param uv_conf: 2D pose confidence
-    :param poly: contours from silhouette
-    :return: camera-space vertex
+    """Adaptive 2D-1D registration
+
+    Args:
+        vertex (array): 3D vertex coordinates in hand frame
+        uv (array): 2D landmarks
+        j_regressor (array): vertex -> joint
+        calib (array): intrinsic camera parameters
+        size (int): image shape
+        uv_conf (array, optional): confidence of 2D landmarks. Defaults to None.
+        poly (array, optional): _description_. Defaults to None.
+
+    Returns:
+        array: camera-space vertex
     """
     t = np.array([0, 0, 0.6])
     bounds = ((None, None), (None, None), (0.05, 2))

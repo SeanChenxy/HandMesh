@@ -138,6 +138,8 @@ class Ge(torch.utils.data.Dataset):
         return avg_est_error.item()
 
 if __name__ == '__main__':
+    """Test the dataset
+    """
     from mobrecon.main import setup
     from options.cfg_options import CFGOptions
 

@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file freihand.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief FreiHAND dataset 
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -20,6 +33,13 @@ from mobrecon.build import DATA_REGISTRY
 class FreiHAND(data.Dataset):
 
     def __init__(self, cfg, phase='train', writer=None):
+        """Init a FreiHAND Dataset
+
+        Args:
+            cfg : config file
+            phase (str, optional): train or eval. Defaults to 'train'.
+            writer (optional): log file. Defaults to None.
+        """
         super(FreiHAND, self).__init__()
         self.cfg = cfg
         self.phase = phase
@@ -44,6 +64,8 @@ class FreiHAND(data.Dataset):
             raise Exception('phase error')
 
     def get_contrastive_sample(self, idx):
+        """Get contrastive FreiHAND samples for consistency learning
+        """
         # read
         img = read_img_abs(idx, self.cfg.DATA.FREIHAND.ROOT, 'training')
         vert = read_mesh(idx % self.one_version_len, self.cfg.DATA.FREIHAND.ROOT).x.numpy()
@@ -143,6 +165,8 @@ class FreiHAND(data.Dataset):
         return res
 
     def get_training_sample(self, idx):
+        """Get a FreiHAND sample for training
+        """
         # read
         img = read_img_abs(idx, self.cfg.DATA.FREIHAND.ROOT, 'training')
         vert = read_mesh(idx % self.one_version_len, self.cfg.DATA.FREIHAND.ROOT).x.numpy()
@@ -216,6 +240,8 @@ class FreiHAND(data.Dataset):
         return res
 
     def get_eval_sample(self, idx):
+        """Get FreiHAND sample for evaluation
+        """
         # read
         img = read_img(idx, self.cfg.DATA.FREIHAND.ROOT, 'evaluation', 'gs')
         mask = read_mask_woclip(idx, self.cfg.DATA.FREIHAND.ROOT, 'evaluation')
@@ -257,6 +283,8 @@ class FreiHAND(data.Dataset):
         return len(self.db_data_anno)
 
     def visualization(self, res, idx):
+        """Visualization of correctness
+        """
         import matplotlib.pyplot as plt
         from mobrecon.tools.vis import perspective
         num_sample = (1, 2)[self.cfg.DATA.CONTRASTIVE]
@@ -317,6 +345,8 @@ class FreiHAND(data.Dataset):
 
 
 if __name__ == '__main__':
+    """Test the dataset
+    """
     from mobrecon.main import setup
     from options.cfg_options import CFGOptions
 

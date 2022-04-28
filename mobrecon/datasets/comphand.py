@@ -1,37 +1,56 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file comphand.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief CompHand dataset 
+ * @version 0.1
+ * @date 2022-04-28
+ * 
+ * @copyright Copyright (c) 2022 chenxingyu
+ * 
+"""
+
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 import torch
 import torch.utils.data as data
 from utils.fh_utils import *
-from utils.vis import base_transform, inv_based_tranmsform, cnt_area
+from utils.vis import base_transform, inv_base_tranmsform, cnt_area
 import cv2
 from utils.augmentation import Augmentation
 from termcolor import cprint
 from pathlib import Path
 from utils.read import read_mesh
 from utils.preprocessing import augmentation, augmentation_2d
-from mobhand.models.loss import contrastive_loss_3d, contrastive_loss_2d
-from mobhand.build import DATA_REGISTRY
+from mobrecon.models.loss import contrastive_loss_3d, contrastive_loss_2d
+from mobrecon.build import DATA_REGISTRY
 import vctoolkit as vc
-from mobhand.tools.kinematics import MPIIHandJoints, mano_to_mpii
+from mobrecon.tools.kinematics import MPIIHandJoints, mano_to_mpii
 
 
 @DATA_REGISTRY.register()
 class CompHand(data.Dataset):
     def __init__(self, cfg, phase='train', writer=None):
+        """Init a CompHand Dataset
+
+        Args:
+            cfg : config file
+            phase (str, optional): train or eval. Defaults to 'train'.
+            writer (optional): log file. Defaults to None.
+        """
         super(CompHand, self).__init__()
         self.cfg = cfg
         self.phase = phase
         self.color_aug = Augmentation() if cfg.DATA.COLOR_AUG and 'train' in self.phase else None
-        self.j_reg = np.load(os.path.join(cfg.DATA.COMPHAND.ROOT, 'j_reg.npy'))
-        self.K = np.load(os.path.join(cfg.DATA.COMPHAND.ROOT, 'K256.npy'))
-        self.K[0, 2] = 256 - self.K[0, 2] # left -> right
-        self.trans = np.load(os.path.join(cfg.DATA.COMPHAND.ROOT, 't.npy'))
-        path_lib = Path(os.path.join(cfg.DATA.COMPHAND.ROOT, 'data'))
+        self.j_reg = np.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../template/j_reg.npy'))
+        self.K = np.array([[373.3511425,   0.,        128.],
+                           [  0.,        373.3511425, 128.],
+                           [  0.,          0.,          1.]])
+        self.trans = np.array([ 0.51977897, 6.54544898, 93.32998466])
+        path_lib = Path(os.path.join(cfg.DATA.COMPHAND.ROOT))
         self.img_list = sorted(list(path_lib.glob('**/pic256/**/*.png')))
-        self.img_list = [img_path for img_path in self.img_list if '215' not in img_path.parts[-1]]
-        # self.img_list = [img_path for img_path in self.img_list if int(img_path.parts[-1].split('.')[1]) %2==0 ]
         self.joint_num = 21
         if writer is not None:
             writer.print_str('Loaded CompHand {} {} samples'.format(self.phase, str(len(self.img_list))))
@@ -44,6 +63,8 @@ class CompHand(data.Dataset):
             return self.get_training_sample(idx)
 
     def get_contrastive_sample(self, idx):
+        """Get contrastive CompHand samples for consistency learning
+        """
         # path prepare
         img_path = self.img_list[idx]
         img_name = img_path.parts[-1]
@@ -143,6 +164,8 @@ class CompHand(data.Dataset):
         return res
 
     def get_training_sample(self, idx):
+        """Get a CompHand sample for training
+        """
         # path prepare
         img_path = self.img_list[idx]
         img_name = img_path.parts[-1]
@@ -220,17 +243,19 @@ class CompHand(data.Dataset):
         return len(self.img_list)
 
     def visualization(self, res, idx):
+        """Visualization of correctness
+        """
         import matplotlib.pyplot as plt
-        from mobhand.tools.vis import perspective
+        from mobrecon.tools.vis import perspective
         num_sample = (1, 2)[self.cfg.DATA.CONTRASTIVE]
         for i in range(num_sample):
             fig = plt.figure(figsize=(8, 2))
-            img = inv_based_tranmsform(res['img'].numpy()[i*3:(i+1)*3])
+            img = inv_base_tranmsform(res['img'].numpy()[i*3:(i+1)*3])
             # joint_img
             if 'joint_img' in res:
                 ax = plt.subplot(1, 4, 1)
                 vis_joint_img = vc.render_bones_from_uv(np.flip(res['joint_img'].numpy()[:, i*2:(i+1)*2]*self.cfg.DATA.SIZE, axis=-1).copy(),
-                                                        img.copy(), MPIIHandJoints.parents, MPIIHandJoints.colors, thickness=2)
+                                                        img.copy(), MPIIHandJoints, thickness=2)
                 ax.imshow(vis_joint_img)
                 ax.set_title('kps2d')
                 ax.axis('off')
@@ -242,7 +267,7 @@ class CompHand(data.Dataset):
                 xyz = xyz * 0.2 + root
                 proj3d = perspective(torch.from_numpy(xyz.copy()).permute(1, 0).unsqueeze(0), res['calib'][i*4:(i+1)*4].unsqueeze(0))[0].numpy().T
                 vis_joint_img = vc.render_bones_from_uv(np.flip(proj3d[:, :2], axis=-1).copy(),
-                                                        img.copy(), MPIIHandJoints.parents, MPIIHandJoints.colors, thickness=2)
+                                                        img.copy(), MPIIHandJoints, thickness=2)
                 ax.imshow(vis_joint_img)
                 ax.set_title('kps3d2d')
                 ax.axis('off')
@@ -277,15 +302,16 @@ class CompHand(data.Dataset):
                 loss2d = contrastive_loss_2d(joint_img, uv_trans, data['img'].size(2))
                 print(idx, loss3d, loss2d)
             plt.subplots_adjust(left=0., right=0.95, top=0.95, bottom=0.03, wspace=0.12, hspace=0.1)
-            # plt.savefig(f'/share/share-tools/chenxingyu/{idx}_{i}.jpg')
             plt.show()
 
 if __name__ == '__main__':
-    from mobhand.main import setup
+    """Test the dataset
+    """
+    from mobrecon.main import setup
     from options.cfg_options import CFGOptions
 
     args = CFGOptions().parse()
-    args.config_file = 'mobhand/configs/mobrecon_ds.yml'
+    args.config_file = 'mobrecon/configs/mobrecon_ds.yml'
     cfg = setup(args)
 
     dataset = CompHand(cfg, 'train')
