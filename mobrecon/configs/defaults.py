@@ -7,7 +7,7 @@ _C.VERSION = 0.1
 _C.PHASE = 'train'
 
 _C.MODEL = CN()
-_C.MODEL.NAME = 'MobRecon_LHR'
+_C.MODEL.NAME = 'MobRecon_DS'
 _C.MODEL.MANO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../template'))
 _C.MODEL.RESUME = ''
 _C.MODEL.KPTS_NUM = 21

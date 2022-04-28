@@ -6,7 +6,7 @@
 This repo is the PyTorch implementation of hand mesh reconstruction described in [CMR](https://arxiv.org/abs/2103.02845) and [MobRecon](https://arxiv.org/abs/2112.02753).
 
 ## Update
-+ 2022-4-28. Wrap old code in `cmr`, including CMR demo/training/evaluation and Mobrecon demo/evaluation. Add `mobrecon` to release MobRecon training.
++ 2022-4-28. Wrap old-version code in `cmr`, including CMR demo/training/evaluation and Mobrecon demo/evaluation. Add `mobrecon` to release MobRecon training.
 + 2021-12-7. Add MobRecon demo.
 + 2021-6-10. Add Human3.6M dataset.
 + 2021-5-20. Add CMR-G model.
@@ -27,7 +27,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
     conda create -n handmesh python=3.6
     conda activate handmesh
     ```
-+ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.7.1, torchvision=0.8.2
++ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.10.0-cuda10.2, torchvision=0.11.0
 + Requirements
     ```
     pip install -r requirements.txt
@@ -35,7 +35,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
 + [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
 
-+ Here, you should accept [MANO LICENCE](https://mano.is.tue.mpg.de/license.html). Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
++ First, you should accept [MANO LICENCE](https://mano.is.tue.mpg.de/license.html). Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
   ```
   ln -s /path/to/mano_v1_2/MANO_RIGHT.pkl template/MANO_RIGHT.pkl
   ```
@@ -135,6 +135,7 @@ We re-produce the following results after code re-organization.
 ./cmr/scripts/train_cmr_human36m.sh
 ./mobrecon/scripts/train_mobrecon.sh
 ```
+A experiment log will be saved under `cmr/out` or `mobrecon/out`
 ## Reference
 ```tex
 @inproceedings{bib:CMR,
