@@ -123,6 +123,7 @@ class FreiHAND(data.Dataset):
                 v0 = np.matmul(rot_point, v0.T).T
                 xyz = np.matmul(rot_point, xyz.T).T
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours = list(contours)
             contours.sort(key=cnt_area, reverse=True)
             x, y, w, h = cv2.boundingRect(contours[0])
             center = (x + w / 2, y + h / 2)

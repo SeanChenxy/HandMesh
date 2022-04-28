@@ -14,7 +14,7 @@ from options.base_options import BaseOptions
 from datasets.FreiHAND.freihand import FreiHAND
 from datasets.Human36M.human36m import Human36M
 from torch.utils.data import DataLoader
-from run import Runner
+from runer import Runner
 from termcolor import cprint
 from tensorboardX import SummaryWriter
 

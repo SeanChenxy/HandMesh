@@ -71,11 +71,12 @@ class Runner(object):
             t_duration = time.time() - t
             self.scheduler.step()
             info = {
-                'current_epoch': self.epoch,
-                'epochs': self.max_epochs,
-                'train_loss': train_loss,
-                't_duration': t_duration
-            }
+                    'current_epoch': self.epoch,
+                    'epochs': self.max_epochs,
+                    'train_loss': train_loss,
+                    'test_loss': 0.0,
+                    't_duration': t_duration
+                }
             self.writer.print_info(info)
             if self.args.dataset=='Human36M':
                 test_error = self.evaluation_withgt()
@@ -144,7 +145,11 @@ class Runner(object):
             if self.total_step % 100 == 0:
                 info = {
                     'train_loss': loss['loss'],
+                    'l1_loss': loss.get('l1_loss', 0),
                     'epoch': self.epoch,
+                    'max_epoch': self.max_epochs,
+                    'step': step,
+                    'max_step': len(self.train_loader),
                     'total_step': self.total_step,
                     'step_duration': step_duration,
                     'lr': self.optimizer.param_groups[0]['lr']

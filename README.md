@@ -154,4 +154,4 @@ We re-produce the following results after code re-organization.
 ## Acknowledgement
 Our implementation of SpiralConv is based on [spiralnet_plus](https://github.com/sw-gong/spiralnet_plus?utm_source=catalyzex.com).
 
-We also thank [hand-graph-cnn](https://github.com/3d-hand-shape/hand-graph-cnn/tree/master/data), [I2L-MeshNet_RELEASE](https://github.com/mks0601/I2L-MeshNet_RELEASE), [detectron2](https://github.com/facebookresearch/detectron2) for inspiring implementations.
+We also thank [hand-graph-cnn](https://github.com/3d-hand-shape/hand-graph-cnn/tree/master/data), [I2L-MeshNet_RELEASE](https://github.com/mks0601/I2L-MeshNet_RELEASE), [detectron2](https://github.com/facebookresearch/detectron2), smplpytorch(https://github.com/gulvarol/smplpytorch) for inspiring implementations.

@@ -67,11 +67,10 @@ class Runner(object):
                 }
 
                 self.writer.print_info(info)
-                if self.args.rank == 0:
-                    if val_loss < self.best_val_loss:
-                        self.writer.save_checkpoint(self.model, self.optimizer, None, self.epoch, best=True)
-                        self.best_test_loss = val_loss
-                    self.writer.save_checkpoint(self.model, self.optimizer, None, self.epoch, last=True)
+                if val_loss < self.best_val_loss:
+                    self.writer.save_checkpoint(self.model, self.optimizer, None, self.epoch, best=True)
+                    self.best_test_loss = val_loss
+                self.writer.save_checkpoint(self.model, self.optimizer, None, self.epoch, last=True)
             self.pred()
         elif self.cfg.PHASE == 'eval':
             self.eval()
@@ -181,7 +180,7 @@ class Runner(object):
             total_loss += loss.item()
             if self.board is not None:
                 self.board_scalar('train', self.total_step, self.optimizer.param_groups[0]['lr'], **losses)
-            if self.total_step % 100 == 0 and self.args.rank == 0:
+            if self.total_step % 100 == 0:
                 cur_time = time.time()
                 duration = cur_time - start_time
                 start_time = cur_time

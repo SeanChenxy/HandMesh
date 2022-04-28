@@ -7,7 +7,9 @@ torch_geometric
 torch_sparse
 openmesh
 scikit-learn
-scikit-image==0.16.2
+scikit-image
 termcolor
-chumpy==0.69
+chumpy
 vctoolkit
+logging
+pycocotools
