@@ -78,6 +78,7 @@ class CompHand(data.Dataset):
         img = cv2.imread(img_path)[:, ::-1, ::-1]
         mask = cv2.imread(mask_path)[..., ::-1, 0]
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = list(contours)
         contours.sort(key=cnt_area, reverse=True)
         bbox = cv2.boundingRect(contours[0])
         center = [bbox[0]+bbox[2]*0.5, bbox[1]+bbox[3]*0.5]
@@ -179,6 +180,7 @@ class CompHand(data.Dataset):
         img = cv2.imread(img_path)[:, ::-1, ::-1]
         mask = cv2.imread(mask_path)[..., ::-1, 0]
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = list(contours)
         contours.sort(key=cnt_area, reverse=True)
         bbox = cv2.boundingRect(contours[0])
         center = [bbox[0]+bbox[2]*0.5, bbox[1]+bbox[3]*0.5]

@@ -14,7 +14,7 @@ DATA:
     USE: True
     ROOT: 'data/CompHand'
 TRAIN:
-  DATASET: 'FreiHAND'
+  DATASET: 'MultipleDatasets'
   EPOCHS: 38
   BATCH_SIZE: 32
   LR: 0.001

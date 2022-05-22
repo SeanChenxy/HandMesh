@@ -18,24 +18,23 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 - [x] DenseStack for 2D encoding
 - [x] Feature lifting with MapReg and PVL
 - [x] DSConv as an efficient mesh operator
-- [ ] Complement data will be available [here](complement_data.md)
-- [x] MobRecon training with consistency learning
+- [x] Complement data will be available [here](complement_data.md)
+- [x] MobRecon training with consistency learning and complement data
 
 ## Install 
 + Environment
     ```
-    conda create -n handmesh python=3.6
+    conda create -n handmesh python=3.9
     conda activate handmesh
     ```
-+ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.10.0-cuda10.2, torchvision=0.11.0
++ Please follow [official suggestions](https://pytorch.org/) to install pytorch and torchvision. We use pytorch=1.11.0-cuda11.3, torchvision=0.12.0
 + Requirements
     ```
     pip install -r requirements.txt
     ```
-  If you have difficulty in installing `torch_sparse` etc., please use `whl` file from [here](https://pytorch-geometric.com/whl/).
-+ [MPI-IS Mesh](https://github.com/MPI-IS/mesh): We suggest to install this library from the source 
-
-+ First, you should accept [MANO LICENCE](https://mano.is.tue.mpg.de/license.html). Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
+  If you have difficulty in installing `torch_sparse` etc., please follow [this link](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
++ Install [MPI-IS Mesh](https://github.com/MPI-IS/mesh) from the source
++ You should accept [MANO LICENCE](https://mano.is.tue.mpg.de/license.html). Download MANO model from [official website](https://mano.is.tue.mpg.de/), then run
   ```
   ln -s /path/to/mano_v1_2/MANO_RIGHT.pkl template/MANO_RIGHT.pkl
   ```
@@ -79,6 +78,8 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
 + Download silhouette GT file `h36m_mask.zip`, and unzip it under `data/Human36M`.
 #### Real World Testset
 + Please download the dataset from [this link](https://github.com/3d-hand-shape/hand-graph-cnn/tree/master/data/real_world_testset), and create a soft link in `data`, i.e., `data/Ge`.
+#### Complement data
++ See [this file](complement_data.md) for complement data. Then, create a soft link in `data`, i.e., `data/CompHand`.
 
 #### Data dir
 ```  
@@ -105,6 +106,11 @@ ${ROOT}
 |   |   |-- images
 |   |   |-- params.mat
 |   |   |-- pose_gt.mat
+|   |-- Compdata
+|   |   |-- base_pose
+|   |   |-- trans_pose_batch1
+|   |   |-- trans_pose_batch2
+|   |   |-- trans_pose_batch3
 ```  
 
 ## Evaluation
