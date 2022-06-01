@@ -1,3 +1,16 @@
+# Copyright (c) Xingyu Chen. All Rights Reserved.
+
+"""
+ * @file dsconv.py
+ * @author chenxingyu (chenxy.sean@gmail.com)
+ * @brief Depth-separable spiral convolution
+ * @version 0.1
+ * @date 2022-04-28
+ *
+ * @copyright Copyright (c) 2022 chenxingyu
+ *
+"""
+
 import torch
 import torch.nn as nn
 import numpy as np
