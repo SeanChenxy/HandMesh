@@ -119,7 +119,7 @@ ${ROOT}
 ./cmr/scripts/eval_cmr_freihand.sh
 ./cmr/scripts/eval_mobrecon_freihand.sh
 ```
-+ JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.josn`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
++ JSON file will be saved as `out/FreiHAND/cmr_sg/cmr_sg.json`. You can submmit this file to the [official server](https://competitions.codalab.org/competitions/21238) for evaluation.
 
 #### Human3.6M
 ```
