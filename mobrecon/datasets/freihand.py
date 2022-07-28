@@ -244,7 +244,6 @@ class FreiHAND(data.Dataset):
         """
         # read
         img = read_img(idx, self.cfg.DATA.FREIHAND.ROOT, 'evaluation', 'gs')
-        mask = read_mask_woclip(idx, self.cfg.DATA.FREIHAND.ROOT, 'evaluation')
         K, scale = self.db_data_anno[idx]
         K = np.array(K)
         princpt = K[0:2, 2].astype(np.float32)
@@ -255,10 +254,10 @@ class FreiHAND(data.Dataset):
         bbox = [center[0]-0.5 * max(w, h), center[1]-0.5 * max(w, h), max(w, h), max(w, h)]
 
         # aug
-        roi, img2bb_trans, bb2img_trans, aug_param, do_flip, scale, mask = augmentation(img, bbox, self.phase,
+        roi, img2bb_trans, bb2img_trans, aug_param, do_flip, scale, _ = augmentation(img, bbox, self.phase,
                                                                                         exclude_flip=not self.cfg.DATA.FREIHAND.FLIP,
                                                                                         input_img_shape=(self.cfg.DATA.SIZE, self.cfg.DATA.SIZE),
-                                                                                        mask=mask,
+                                                                                        mask=None,
                                                                                         base_scale=self.cfg.DATA.FREIHAND.BASE_SCALE,
                                                                                         scale_factor=self.cfg.DATA.FREIHAND.SCALE,
                                                                                         rot_factor=self.cfg.DATA.FREIHAND.ROT,
@@ -266,7 +265,6 @@ class FreiHAND(data.Dataset):
                                                                                         gaussian_std=self.cfg.DATA.STD)
         roi = base_transform(roi, self.cfg.DATA.SIZE, mean=self.cfg.DATA.IMG_MEAN, std=self.cfg.DATA.IMG_STD)
         roi = torch.from_numpy(roi).float()
-        mask = torch.from_numpy(mask).float()
 
         # K
         focal = focal * roi.size(1) / (bbox[2]*aug_param[1])
@@ -276,7 +274,7 @@ class FreiHAND(data.Dataset):
         calib[:2, 2:3] = princpt[:, None]
         calib = torch.from_numpy(calib).float()
 
-        return {'img': roi, 'mask': mask, 'calib': calib}
+        return {'img': roi, 'calib': calib}
 
     def __len__(self):
 

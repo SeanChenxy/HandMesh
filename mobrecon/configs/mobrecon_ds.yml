@@ -4,7 +4,7 @@ MODEL:
   NAME: MobRecon_DS
   SPIRAL:
     TYPE: 'DSConv'
-  # RESUME: checkpoint_last.pt
+#  RESUME: checkpoint_last.pt
 DATA:
   CONTRASTIVE: True
   FREIHAND:

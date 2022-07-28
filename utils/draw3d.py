@@ -78,7 +78,7 @@ def draw_mesh(image, cam_param, mesh_xyz, face):
     vertex2uv = (vertex2uv / vertex2uv[:, 2:3])[:, :2].astype(np.int)
 
     fig = plt.figure()
-    fig.set_size_inches(float(image.shape[0]) / fig.dpi, float(image.shape[1]) / fig.dpi, forward=True)
+    fig.set_size_inches(float(image.shape[1]) / fig.dpi, float(image.shape[0]) / fig.dpi, forward=True)
     plt.imshow(image)
     plt.axis('off')
     if face is None:
@@ -144,7 +144,7 @@ def draw_3d_skeleton(pose_cam_xyz, image_size):
     """
     assert pose_cam_xyz.shape[0] == 21
     fig = plt.figure()
-    fig.set_size_inches(float(image_size[0]) / fig.dpi, float(image_size[1]) / fig.dpi, forward=True)
+    fig.set_size_inches(float(image_size[1]) / fig.dpi, float(image_size[0]) / fig.dpi, forward=True)
 
     ax = plt.subplot(111, projection='3d')
     marker_sz = 10
@@ -194,7 +194,7 @@ def draw_3d_mesh(mesh_xyz, image_size, face):
     :return:
     """
     fig = plt.figure()
-    fig.set_size_inches(float(image_size[0]) / fig.dpi, float(image_size[1]) / fig.dpi, forward=True)
+    fig.set_size_inches(float(image_size[1]) / fig.dpi, float(image_size[0]) / fig.dpi, forward=True)
 
     ax = plt.subplot(111, projection='3d')
 
