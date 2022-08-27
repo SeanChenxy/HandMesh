@@ -38,16 +38,16 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   ```
   ln -s /path/to/mano_v1_2/MANO_RIGHT.pkl template/MANO_RIGHT.pkl
   ```
-+ Download the files you need from [Google drive](https://drive.google.com/drive/folders/1MIE0Jo01blG6RWo2trQbXlQ92tMOaLx_?usp=sharing).
++ Download the files you need from [Google drive](https://drive.google.com/drive/folders/1MIE0Jo01blG6RWo2trQbXlQ92tMOaLx_?usp=sharing) or [Baidu cloud](https://pan.baidu.com/s/12X1qsuxO2j8jGl6QWJdV6A?pwd=rc4x).
 
 ## Run a demo
 + Prepare pre-trained models as
   ```
-  out/Human36M/cmr_g/checkpoints/cmr_pg_res18_human36m.pt
-  out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
-  out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
-  out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
-  out/FreiHAND/mobrecon/checkpoints/mobrecon_densestack_dsconv.pt  
+  cmr/out/Human36M/cmr_g/checkpoints/cmr_pg_res18_human36m.pt
+  cmr/out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
+  cmr/out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
+  cmr/out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
+  cmr/out/FreiHAND/mobrecon/checkpoints/mobrecon_densestack_dsconv.pt  
   ``` 
 + Run
   ```
