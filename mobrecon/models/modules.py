@@ -189,7 +189,7 @@ class Reg2DDecode3D(nn.Module):
         self.up_transform = up_transform
         self.num_vert = [u[0].size(0)//3 for u in self.up_transform] + [self.up_transform[-1][0].size(0)//6]
         self.uv_channel = uv_channel
-        self.de_layer_conv = conv_layer(self.latent_size, self.out_channels[- 1], 1, bn=False, relu=False)
+        # self.de_layer_conv = conv_layer(self.latent_size, self.out_channels[- 1], 1, bn=False, relu=False)
         self.de_layer = nn.ModuleList()
         for idx in range(len(self.out_channels)):
             if idx == 0:
@@ -207,7 +207,7 @@ class Reg2DDecode3D(nn.Module):
 
     def forward(self, uv, x):
         uv = torch.clamp((uv - 0.5) * 2, -1, 1)
-        x = self.de_layer_conv(x)
+        # x = self.de_layer_conv(x)
         x = self.index(x, uv).permute(0, 2, 1)
         x = torch.bmm(self.upsample.repeat(x.size(0), 1, 1).to(x.device), x)
         num_features = len(self.de_layer)

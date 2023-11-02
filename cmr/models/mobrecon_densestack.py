@@ -1,12 +1,15 @@
 # ------------------------------------------------------------------------------
-# Copyright (c) 2021
+# Copyright (c) 2023
 # Licensed under the MIT License.
 # Written by Xingyu Chen(chenxingyusean@foxmail.com)
 # ------------------------------------------------------------------------------
 
 import torch.nn as nn
 import torch
-from cmr.models.network_mobrecon import DWReg2DDecode3D, conv_layer, linear_layer, DenseStack, DenseStack2, mobile_unit, Reorg
+from mobrecon.models.modules import Reg2DDecode3D, conv_layer, linear_layer
+from mobrecon.models.densestack import DenseStack, DenseStack2, mobile_unit, Reorg
+from conv.spiralconv import SpiralConv
+from conv.dsconv import DSConv
 
 
 class Backbone(nn.Module):
@@ -52,7 +55,7 @@ class MobRecon(nn.Module):
         self.input_channel = 128
         self.up_transform = up_transform
         self.backbone = Backbone(self.input_channel, 24, args.out_channels[-1])
-        self.decoder3d = DWReg2DDecode3D(self.input_channel * 2, args.out_channels, spiral_indices, up_transform, self.uv_channel)
+        self.decoder3d = Reg2DDecode3D(self.input_channel * 2, args.out_channels, spiral_indices, up_transform, self.uv_channel, meshconv=(SpiralConv, DSConv)[args.dsconv])
 
     def forward(self, x):
         latent, pred2d_pt = self.backbone(x)

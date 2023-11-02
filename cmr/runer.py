@@ -7,7 +7,7 @@ from utils.vis import registration, map2uv, inv_base_tranmsform, base_transform,
 from utils.draw3d import save_a_image_with_mesh_joints
 from utils.read import save_mesh
 import json
-from datasets.FreiHAND.kinematics import mano_to_mpii
+from cmr.datasets.FreiHAND.kinematics import mano_to_mpii
 from utils.progress.bar import Bar
 from termcolor import colored, cprint
 import pickle

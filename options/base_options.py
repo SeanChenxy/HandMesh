@@ -29,6 +29,7 @@ class BaseOptions():
         parser.add_argument('--backbone', type=str, default='ResNet18')
         parser.add_argument('--bn', type=self.str2bool, default='no')
         parser.add_argument('--att', type=self.str2bool, default='no')
+        parser.add_argument('--dsconv', type=self.str2bool, default='no')
 
         # optimizer hyperparmeters
         parser.add_argument('--optimizer', type=str, default='Adam')

@@ -6,6 +6,7 @@
 This repo is the PyTorch implementation of hand mesh reconstruction described in [CMR](https://arxiv.org/abs/2103.02845) and [MobRecon](https://arxiv.org/abs/2112.02753).
 
 ## Update
++ 2023-11-2. Add MobRecon (SpiralConv verison) model for more robust real-world applications. If you target on freely captured images, please try `./cmr/scripts/demo_mobrecon.sh`. 
 + 2022-4-28. Wrap old-version code in `cmr`, including CMR demo/training/evaluation and Mobrecon demo/evaluation. Add `mobrecon` to release MobRecon training.
 + 2021-12-7. Add MobRecon demo.
 + 2021-6-10. Add Human3.6M dataset.
@@ -48,6 +49,7 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   cmr/out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
   cmr/out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
   cmr/out/FreiHAND/mobrecon/checkpoints/mobrecon_densestack_dsconv.pt  
+  cmr/out/FreiHAND/mobrecon_spconv/checkpoints/mobrecon_densestack.pt  
   ``` 
 + Run
   ```

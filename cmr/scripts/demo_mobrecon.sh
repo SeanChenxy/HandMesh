@@ -1,5 +1,5 @@
 phase='demo'
-exp_name='mobrecon'
+exp_name='mobrecon_spconv'
 backbone='DenseStack'
 dataset='FreiHAND'
 model='mobrecon'
@@ -13,4 +13,5 @@ python cmr/main.py \
     --size 128 \
     --out_channels 32 64 128 256 \
     --seq_length 9 9 9 9 \
-    --resume 'mobrecon_densestack_dsconv.pt'
+    --dsconv 'no' \
+    --resume 'mobrecon_densestack.pt' \

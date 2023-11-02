@@ -11,8 +11,8 @@ from cmr.models.mobrecon_densestack import MobRecon
 from utils.read import spiral_tramsform
 from utils import utils, writer
 from options.base_options import BaseOptions
-from datasets.FreiHAND.freihand import FreiHAND
-from datasets.Human36M.human36m import Human36M
+from cmr.datasets.FreiHAND.freihand import FreiHAND
+from cmr.datasets.Human36M.human36m import Human36M
 from torch.utils.data import DataLoader
 from runer import Runner
 from termcolor import cprint
