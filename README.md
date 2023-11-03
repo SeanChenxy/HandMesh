@@ -48,7 +48,6 @@ This repo is the PyTorch implementation of hand mesh reconstruction described in
   cmr/out/FreiHAND/cmr_g/checkpoints/cmr_g_res18_moredata.pt
   cmr/out/FreiHAND/cmr_sg/checkpoints/cmr_sg_res18_freihand.pt
   cmr/out/FreiHAND/cmr_pg/checkpoints/cmr_pg_res18_freihand.pt  
-  cmr/out/FreiHAND/mobrecon/checkpoints/mobrecon_densestack_dsconv.pt  
   cmr/out/FreiHAND/mobrecon_spconv/checkpoints/mobrecon_densestack.pt  
   ``` 
 + Run
